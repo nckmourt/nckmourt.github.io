@@ -1,0 +1,112 @@
+---
+const {
+  title = "Nick Mourtoupalas",
+  description = "Graphics and data visualization portfolio.",
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root{
+        --bg:#0b0d12;
+        --panel:#101523;
+        --text:#e9eefb;
+        --muted:#aab3cc;
+        --border:rgba(255,255,255,0.10);
+        --link:#9cc3ff;
+        --max:1080px;
+        --radius:14px;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 700px at 10% 0%, rgba(156,195,255,0.15), transparent 60%),
+                    radial-gradient(900px 600px at 90% 20%, rgba(255,255,255,0.08), transparent 55%),
+                    var(--bg);
+        color:var(--text);
+        line-height:1.55;
+      }
+      a{color:var(--link); text-decoration:none}
+      a:hover{text-decoration:underline}
+      .wrap{max-width:var(--max); margin:0 auto; padding:28px 18px 60px}
+      .panel{
+        background:linear-gradient(180deg, rgba(16,21,35,0.95), rgba(16,21,35,0.75));
+        border:1px solid var(--border);
+        border-radius:var(--radius);
+        padding:18px;
+      }
+      .h1{font-size:38px; line-height:1.1; letter-spacing:-0.02em; margin:10px 0 10px}
+      .h2{font-size:22px; margin:0 0 10px}
+      .lead{color:var(--muted); font-size:16px; margin:0 0 18px}
+      .grid{
+        display:grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap:14px;
+      }
+      .col-12{grid-column: span 12}
+      @media (min-width: 760px){
+        .col-7{grid-column: span 7}
+        .col-5{grid-column: span 5}
+        .col-6{grid-column: span 6}
+        .col-4{grid-column: span 4}
+      }
+      .btn{
+        display:inline-flex; align-items:center; gap:8px;
+        padding:10px 12px;
+        border-radius:12px;
+        border:1px solid var(--border);
+        background:rgba(255,255,255,0.06);
+        color:var(--text);
+        text-decoration:none;
+      }
+      .btn:hover{background:rgba(255,255,255,0.10); text-decoration:none}
+      .muted{color:var(--muted)}
+      .hr{height:1px; background:var(--border); margin:18px 0}
+      .kicker{font-size:12px; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted)}
+      .pillRow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+      .prose p{margin:0 0 14px}
+      .prose ul{margin:0 0 14px; padding-left:18px}
+      .prose li{margin:6px 0}
+      img{max-width:100%; border-radius:12px; border:1px solid var(--border)}
+      .heroBox{
+        border:1px solid var(--border);
+        border-radius:var(--radius);
+        background:rgba(255,255,255,0.04);
+        padding:14px;
+      }
+      .thumb{
+        aspect-ratio:16/9;
+        border-radius:12px;
+        border:1px solid var(--border);
+        background:
+          radial-gradient(600px 180px at 10% 20%, rgba(156,195,255,0.20), transparent 60%),
+          radial-gradient(500px 200px at 90% 70%, rgba(255,255,255,0.10), transparent 55%),
+          rgba(255,255,255,0.04);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:rgba(233,238,251,0.75);
+        font-size:13px;
+        padding:12px;
+        text-align:center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <slot name="header" />
+      <main>
+        <slot />
+      </main>
+      <slot name="footer" />
+    </div>
+  </body>
+</html>

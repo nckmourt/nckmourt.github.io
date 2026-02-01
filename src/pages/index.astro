@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { getCollection } from "astro:content";
+
+const projects = await getCollection("projects");
+const featured = projects.filter(p => p.data.featured).slice(0, 6);
+---
+<BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio shell with case studies and selected work.">
+  <Fragment slot="header"><Header /></Fragment>
+
+  <section class="panel" style="margin-top:18px;">
+    <div class="grid">
+      <div class="col-12 col-7">
+        <div class="kicker">Portfolio</div>
+        <h1 class="h1">Graphics and data visualization</h1>
+        <p class="lead">
+          Placeholder positioning statement. Replace with 1 to 2 sentences about your focus, beats, and the kind of work you ship.
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn" href="/work/">View selected work</a>
+          <a class="btn" href="/about/">About</a>
+          <a class="btn" href="/contact/">Contact</a>
+        </div>
+      </div>
+
+      <div class="col-12 col-5 heroBox">
+        <div class="kicker">Highlights</div>
+        <ul class="muted" style="margin:10px 0 0; padding-left:18px;">
+          <li>Placeholder: elections, courts, accountability, investigations</li>
+          <li>Placeholder: maps, explainers, interactives, data reporting</li>
+          <li>Placeholder: D3, QGIS, Illustrator, Python, Mapshaper</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:18px;">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+      <div>
+        <div class="kicker">Selected work</div>
+        <div class="h2">Featured projects</div>
+      </div>
+      <a class="btn" href="/work/">All work</a>
+    </div>
+
+    <div class="grid" style="margin-top:14px;">
+      {featured.map((p) => (
+        <div class="col-12 col-6">
+          <ProjectCard project={p} />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <Fragment slot="footer"><Footer /></Fragment>
+</BaseLayout>

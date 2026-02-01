@@ -1,0 +1,30 @@
+---
+import Tag from "./Tag.astro";
+
+const { project } = Astro.props;
+// project is a content collection entry
+const data = project.data;
+const href = `/projects/${project.slug}/`;
+---
+<a class="panel" href={href} style="display:block; text-decoration:none;">
+  <div class="thumb">
+    {data.heroImage ? (
+      <img src={data.heroImage} alt="" style="width:100%; height:100%; object-fit:cover;" />
+    ) : (
+      <div>
+        <div style="font-weight:700; margin-bottom:6px;">Project thumbnail placeholder</div>
+        <div class="muted">Add heroImage in frontmatter, or keep this.</div>
+      </div>
+    )}
+  </div>
+
+  <div style="margin-top:12px;">
+    <div class="kicker">{data.date}</div>
+    <div style="font-size:18px; font-weight:700; margin-top:6px; color:var(--text);">{data.title}</div>
+    <div class="muted" style="margin-top:6px;">{data.description}</div>
+
+    <div class="pillRow">
+      {(data.tags || []).slice(0, 4).map((t) => <Tag label={t} />)}
+    </div>
+  </div>
+</a>

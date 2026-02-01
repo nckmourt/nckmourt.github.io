@@ -1,0 +1,62 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Tag from "../components/Tag.astro";
+
+const { entry } = Astro.props;
+const { title, description, date, role, tools, tags, heroImage, externalUrl } = entry.data;
+---
+<BaseLayout title={`${title} | Nick Mourtoupalas`} description={description}>
+  <Fragment slot="header"><Header /></Fragment>
+
+  <article class="panel">
+    <div class="kicker">Project</div>
+    <h1 class="h1">{title}</h1>
+    <p class="lead">{description}</p>
+
+    <div class="grid" style="margin-top:12px;">
+      <div class="col-12 col-7 heroBox">
+        {heroImage ? <img src={heroImage} alt="" /> : <div class="thumb">Hero image placeholder</div>}
+      </div>
+
+      <aside class="col-12 col-5 heroBox">
+        <div style="display:grid; gap:10px;">
+          <div>
+            <div class="kicker">Date</div>
+            <div>{date}</div>
+          </div>
+          <div>
+            <div class="kicker">Role</div>
+            <div>{role}</div>
+          </div>
+          <div>
+            <div class="kicker">Tools</div>
+            <div class="muted">{(tools || []).join(", ") || "Placeholder tools list"}</div>
+          </div>
+          <div>
+            <div class="kicker">Tags</div>
+            <div class="pillRow">
+              {(tags || []).map((t) => <Tag label={t} />)}
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+            {externalUrl && (
+              <a class="btn" href={externalUrl} target="_blank" rel="noreferrer">View published work</a>
+            )}
+            <a class="btn" href="/work/">Back to work</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+
+  <Fragment slot="footer"><Footer /></Fragment>
+</BaseLayout>
