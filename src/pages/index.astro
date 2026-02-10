@@ -2,58 +2,73 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Hero from "../components/Hero.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
 const featured = projects.filter(p => p.data.featured).slice(0, 6);
 ---
-<BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio shell with case studies and selected work.">
+<BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio of graphics journalism and data visualization.">
   <Fragment slot="header"><Header /></Fragment>
+  
+  <Hero />
 
-  <section class="panel" style="margin-top:18px;">
-    <div class="grid">
-      <div class="col-12 col-7">
-        <div class="kicker">Portfolio</div>
-        <h1 class="h1">Graphics and data visualization</h1>
-        <p class="lead">
-          Placeholder positioning statement. Replace with 1 to 2 sentences about your focus, beats, and the kind of work you ship.
-        </p>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="btn" href="/work/">View selected work</a>
-          <a class="btn" href="/about/">About</a>
-          <a class="btn" href="/contact/">Contact</a>
-        </div>
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Visual Journalism</h2>
+        <a href="/work/" class="view-all">View all work &rarr;</a>
       </div>
-
-      <div class="col-12 col-5 heroBox">
-        <div class="kicker">Highlights</div>
-        <ul class="muted" style="margin:10px 0 0; padding-left:18px;">
-          <li>Placeholder: elections, courts, accountability, investigations</li>
-          <li>Placeholder: maps, explainers, interactives, data reporting</li>
-          <li>Placeholder: D3, QGIS, Illustrator, Python, Mapshaper</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel" style="margin-top:18px;">
-    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-      <div>
-        <div class="kicker">Selected work</div>
-        <div class="h2">Featured projects</div>
-      </div>
-      <a class="btn" href="/work/">All work</a>
-    </div>
-
-    <div class="grid" style="margin-top:14px;">
-      {featured.map((p) => (
-        <div class="col-12 col-6">
+      
+      <div class="project-grid">
+        {featured.map((p) => (
           <ProjectCard project={p} />
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </section>
 
   <Fragment slot="footer"><Footer /></Fragment>
 </BaseLayout>
+
+<style>
+  .section {
+    padding: 80px 0;
+    background: var(--bg);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 40px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: 'Merriweather', serif;
+    font-size: 2rem;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .view-all {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
+  }
+
+  @media (max-width: 600px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

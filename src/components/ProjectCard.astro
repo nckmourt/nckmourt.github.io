@@ -1,30 +1,114 @@
 ---
-import Tag from "./Tag.astro";
-
 const { project } = Astro.props;
 // project is a content collection entry
 const data = project.data;
 const href = `/projects/${project.slug}/`;
 ---
-<a class="panel" href={href} style="display:block; text-decoration:none;">
-  <div class="thumb">
+<a class="project-card" href={href}>
+  <div class="thumb-container">
     {data.heroImage ? (
-      <img src={data.heroImage} alt="" style="width:100%; height:100%; object-fit:cover;" />
+      <img src={data.heroImage} alt={data.title} class="thumb-img" />
     ) : (
-      <div>
-        <div style="font-weight:700; margin-bottom:6px;">Project thumbnail placeholder</div>
-        <div class="muted">Add heroImage in frontmatter, or keep this.</div>
+      <div class="thumb-placeholder">
+        <span class="placeholder-text">{data.title}</span>
       </div>
     )}
   </div>
 
-  <div style="margin-top:12px;">
-    <div class="kicker">{data.date}</div>
-    <div style="font-size:18px; font-weight:700; margin-top:6px; color:var(--text);">{data.title}</div>
-    <div class="muted" style="margin-top:6px;">{data.description}</div>
-
-    <div class="pillRow">
-      {(data.tags || []).slice(0, 4).map((t) => <Tag label={t} />)}
+  <div class="content">
+    <div class="meta">
+      <span class="date">{data.date}</span>
+      {data.role && <span class="role">• {data.role}</span>}
     </div>
+    <h3 class="title">{data.title}</h3>
+    <p class="description">{data.description}</p>
   </div>
 </a>
+
+<style>
+  .project-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease;
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    text-decoration: none;
+  }
+  
+  .project-card:hover .title {
+    color: var(--link);
+  }
+
+  .thumb-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f0f0f0;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .project-card:hover .thumb-img {
+    transform: scale(1.02);
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eee 0%, #ddd 100%);
+    color: #666;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .meta {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    font-family: 'Merriweather', serif;
+    color: var(--accent);
+    transition: color 0.2s ease;
+  }
+
+  .description {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    opacity: 0.9;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .thumb-container {
+      border-color: rgba(255,255,255,0.1);
+      background: #1a1a1a;
+    }
+    .thumb-placeholder {
+      background: linear-gradient(135deg, #222 0%, #111 100%);
+      color: #888;
+    }
+  }
+</style>
