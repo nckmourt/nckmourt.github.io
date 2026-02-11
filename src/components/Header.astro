@@ -1,17 +1,15 @@
 ---
 const nav = [
   { href: "/", label: "Home" },
-  { href: "/work/", label: "Work" },
-  { href: "/photography/", label: "Photography" },
+  { href: "/work/", label: "Graphics" },
+  { href: "/photography/", label: "Photo" },
   { href: "/about/", label: "About" },
-  { href: "/contact/", label: "Contact" },
 ];
 ---
 <header class="site-header">
-  <div class="container header-inner">
+  <div class="header-inner">
     <a href="/" class="brand">
-      <span class="brand-name">Nick Mourtoupalas</span>
-      <span class="brand-tag">Visual Communication</span>
+      <span class="brand-name">NICK MOURTOUPALAS</span>
     </a>
 
     <nav class="site-nav">
@@ -26,8 +24,8 @@ const nav = [
   .site-header {
     width: 100%;
     height: var(--nav-height);
-    background: var(--bg);
-    border-bottom: 1px solid rgba(128,128,128,0.1);
+    background: #ffffff;
+    border-bottom: 2px solid #000; /* Solid black border */
     position: sticky;
     top: 0;
     z-index: 100;
@@ -38,35 +36,36 @@ const nav = [
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 40px;
+    max-width: 100%;
   }
 
   .brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Inter', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent);
+    text-decoration: none;
   }
 
-  .brand-tag {
-    color: var(--link);
-    font-weight: 400;
+  .brand-name {
+    font-family: 'Bebas Neue', sans-serif; /* Bebas Neue */
+    font-weight: 400; /* Bebas Neue is 400 by default but looks bold */
+    font-size: 24px; /* Slightly larger for impact */
+    letter-spacing: 0.05em;
+    color: #000;
+    text-transform: uppercase;
   }
 
   .site-nav {
     display: flex;
-    gap: 24px;
+    gap: 40px;
   }
 
   .nav-link {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
+    font-family: 'Bebas Neue', sans-serif; /* Bebas Neue for nav too if requested, or keep Inter. User said "Bebas Neue for my name", usually implies headers. Let's make headers/nav match for specific look. */
+    font-size: 20px;
+    font-weight: 400;
+    color: #000;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
   }
   
   .nav-link:hover {
@@ -75,11 +74,17 @@ const nav = [
   }
 
   @media (max-width: 768px) {
-    .brand-tag {
-      display: none;
+    .header-inner {
+      padding: 0 20px;
     }
     .site-nav {
-      gap: 16px;
+      gap: 20px;
+    }
+    .brand-name {
+      font-size: 20px;
+    }
+    .nav-link {
+      font-size: 14px;
     }
   }
 </style>

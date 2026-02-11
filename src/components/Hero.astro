@@ -1,91 +1,181 @@
 ---
+const slides = [
+  "/slides/1.jpg",
+  "/slides/2.jpg",
+  "/slides/3.jpg",
+];
 ---
-<section class="hero">
-  <div class="hero-bg">
-    <!-- Placeholder for hero background image -->
-    <div class="overlay"></div>
+<section class="hero-split">
+  <!-- Left Column: Slideshow -->
+  <div class="hero-left">
+    <div class="slideshow-container">
+      {slides.map((src, index) => (
+        <img 
+          src={src} 
+          class={`slide ${index === 0 ? 'active' : ''}`} 
+          alt="" 
+        />
+      ))}
+      <div class="placeholder-overlay">
+        <p>Add images to public/slides/ (1.jpg, 2.jpg, 3.jpg)</p>
+      </div>
+    </div>
   </div>
-  
-  <div class="hero-content">
-    <h1 class="hero-title">Nick Mourtoupalas</h1>
-    <p class="hero-lead">
-      I tell the world's most important stories with maps, data visualization, and design.
-    </p>
+
+  <!-- Right Column: Text/Intro -->
+  <div class="hero-right">
+    <div class="content-wrapper">
+      <h1 class="hero-name">
+        <span>NICK</span>
+        <span>MOURTOUPALAS</span>
+      </h1>
+      
+      <p class="hero-bio">
+        Visual journalist and graphics reporter specializing in political data, 
+        congressional power, federal spending, redistricting and judicial impact. 
+        Over nine years in the newsroom, rising from copy aide to reporter, building 
+        data-driven visual stories that translate complex policy, elections and 
+        economic systems into accessible graphics and interactive experiences.
+      </p>
+    </div>
   </div>
 </section>
 
+<script>
+  // Simple slideshow logic
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  const intervalTime = 3000; // 3 seconds
+
+  function nextSlide() {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }
+
+  if (slides.length > 0) {
+    setInterval(nextSlide, intervalTime);
+  }
+</script>
+
 <style>
-  .hero {
-    position: relative;
+  .hero-split {
+    display: flex;
+    /* Height calculation: 100vh minus header height */
+    min-height: calc(100vh - 80px); /* 80px matches nav-height */
     width: 100%;
-    height: calc(100vh - var(--nav-height));
+  }
+
+  /* Left Column */
+  .hero-left {
+    flex: 1;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    background-color: #111;
-  }
-
-  .hero-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Replace this URL with your actual map/visual background */
-    background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop'); 
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-  }
-
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4);
-  }
-
-  .hero-content {
+    overflow: hidden; /* Important for slideshow */
     position: relative;
+    border-right: 1px solid rgba(0,0,0,0.1); 
+  }
+
+  .slideshow-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Replaces background-size: cover */
+    opacity: 0;
+    transform: translateX(100%); /* Start off-screen right */
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease; /* iPhone swipe feel */
     z-index: 1;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    z-index: 2;
+  }
+
+  /* 
+     Optional: If you want the previous slide to slide OUT to the left, 
+     you need more complex JS. For simple "stacking" or fading in/out with slide motion:
+     The current CSS slides the NEW one IN from the right over the old one.
+  */
+
+  .placeholder-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    pointer-events: none;
     text-align: center;
-    max-width: 600px;
-    padding: 60px 40px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    border-radius: 4px;
-    color: #fff;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .hero-title {
-    font-family: 'Merriweather', serif;
-    font-style: italic;
-    font-size: 3.5rem;
-    font-weight: 300;
-    margin-bottom: 20px;
-    color: #fff;
-  }
-
-  .hero-lead {
+    color: #ccc;
     font-family: 'Inter', sans-serif;
-    font-size: 1.25rem;
+  }
+  
+  /* Hide placeholder if slides are working */
+  .slide.active ~ .placeholder-overlay {
+    display: none;
+  }
+
+  /* Right Column */
+  .hero-right {
+    flex: 1;
+    background-color: var(--hero-blue); 
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+  }
+
+  .content-wrapper {
+    max-width: 600px;
+    text-align: left; /* Ensure left align for the stacked text */
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400; 
+    font-size: 7.5rem; /* Reduced from 10rem */
+    line-height: 0.85; /* Tight stack */
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    color: #ffffff;
+  }
+  
+  .hero-bio {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.125rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
-    margin: 0;
+    max-width: 500px;
   }
 
-  @media (max-width: 768px) {
-    .hero-title {
-      font-size: 2.5rem;
+  /* Responsive Design */
+  @media (max-width: 900px) {
+    .hero-split {
+      flex-direction: column;
     }
-    .hero-content {
-      margin: 0 20px;
+    
+    .hero-left, .hero-right {
+      min-height: 50vh;
       padding: 40px 20px;
+    }
+
+    .hero-name {
+      font-size: 3.5rem;
     }
   }
 </style>
