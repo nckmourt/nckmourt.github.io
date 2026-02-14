@@ -31,11 +31,7 @@ const slides = [
       </h1>
       
       <p class="hero-bio">
-        Visual journalist and graphics reporter specializing in political data, 
-        congressional power, federal spending, redistricting and judicial impact. 
-        Over nine years in the newsroom, rising from copy aide to reporter, building 
-        data-driven visual stories that translate complex policy, elections and 
-        economic systems into accessible graphics and interactive experiences.
+        I build visual systems that make complex institutions understandable. I report, analyze, and design visual tools that explain how power, policy, markets, and communities shape daily life.
       </p>
     </div>
   </div>
@@ -69,13 +65,13 @@ const slides = [
   /* Left Column */
   .hero-left {
     flex: 1;
-    background-color: #ffffff;
+    background-color: var(--bg); /* Use global bg variable */
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden; /* Important for slideshow */
     position: relative;
-    border-right: 1px solid rgba(0,0,0,0.1); 
+    border-right: 1px solid rgba(128,128,128,0.1); 
   }
 
   .slideshow-container {
@@ -138,8 +134,9 @@ const slides = [
   }
 
   .content-wrapper {
-    max-width: 600px;
-    text-align: left; /* Ensure left align for the stacked text */
+    width: min-content; /* Force width to match the longest word (MOURTOUPALAS) */
+    max-width: 100%;
+    text-align: left;
   }
 
   .hero-name {
@@ -160,7 +157,7 @@ const slides = [
     font-size: 1.125rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
-    max-width: 500px;
+    /* No max-width needed, it will fill the min-content wrapper */
   }
 
   /* Responsive Design */

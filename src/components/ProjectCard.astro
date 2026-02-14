@@ -2,9 +2,10 @@
 const { project } = Astro.props;
 // project is a content collection entry
 const data = project.data;
-const href = `/projects/${project.slug}/`;
+const href = data.externalUrl || `/projects/${project.slug}/`;
+const target = data.externalUrl ? "_blank" : "_self";
 ---
-<a class="project-card" href={href}>
+<a class="project-card" href={href} target={target} rel={data.externalUrl ? "noopener noreferrer" : ""}>
   <div class="thumb-container">
     {data.heroImage ? (
       <img src={data.heroImage} alt={data.title} class="thumb-img" />
@@ -34,7 +35,7 @@ const href = `/projects/${project.slug}/`;
   }
 
   .project-card:hover {
-    transform: translateY(-4px);
+    /* transform: translateY(-4px);  <-- Removed generic lift, focusing on image zoom now */
     text-decoration: none;
   }
   
@@ -50,17 +51,21 @@ const href = `/projects/${project.slug}/`;
     background: #f0f0f0;
     margin-bottom: 16px;
     border: 1px solid rgba(0,0,0,0.1);
+    /* Ensure the zoom doesn't overflow */
+    position: relative;
   }
 
   .thumb-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease, filter 0.3s ease; /* added filter transition */
   }
   
+  /* hover effect: Zoom in slightly AND dim slightly */
   .project-card:hover .thumb-img {
-    transform: scale(1.02);
+    transform: scale(1.05);
+    filter: brightness(0.9);
   }
 
   .thumb-placeholder {

@@ -24,8 +24,8 @@ const nav = [
   .site-header {
     width: 100%;
     height: var(--nav-height);
-    background: #ffffff;
-    border-bottom: 2px solid #000; /* Solid black border */
+    background: var(--header-bg);
+    border-bottom: 2px solid var(--header-border); /* Solid border uses variable */
     position: sticky;
     top: 0;
     z-index: 100;
@@ -49,7 +49,7 @@ const nav = [
     font-weight: 400; /* Bebas Neue is 400 by default but looks bold */
     font-size: 24px; /* Slightly larger for impact */
     letter-spacing: 0.05em;
-    color: #000;
+    color: var(--header-text);
     text-transform: uppercase;
   }
 
@@ -62,7 +62,7 @@ const nav = [
     font-family: 'Bebas Neue', sans-serif; /* Bebas Neue for nav too if requested, or keep Inter. User said "Bebas Neue for my name", usually implies headers. Let's make headers/nav match for specific look. */
     font-size: 20px;
     font-weight: 400;
-    color: #000;
+    color: var(--header-text);
     text-decoration: none;
     letter-spacing: 0.05em;
     transition: color 0.2s ease;

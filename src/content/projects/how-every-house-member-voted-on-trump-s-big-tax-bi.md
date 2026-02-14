@@ -1,0 +1,9 @@
+---
+title: "How every House member voted on Trump’s big tax bill"
+description: "See how every lawmaker voted."
+date: "2026-02-14"
+role: "Graphics Reporter"
+featured: false
+externalUrl: "https://wapo.st/45Umavr"
+heroImage: "/images/projects/how-every-house-member-voted-on-trump-s-big-tax-bi.jpg"
+---
