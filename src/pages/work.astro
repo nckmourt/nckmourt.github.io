@@ -2,28 +2,476 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
 const sorted = projects.sort((a,b) => (a.data.date < b.data.date ? 1 : -1));
+const portfolioLinks = [
+  "https://wapo.st/4lK1zjz",
+  "https://wapo.st/3WjjAKt",
+  "https://wapo.st/3XAaHMz",
+  "https://wapo.st/3OssBQh",
+  "https://wapo.st/4lRmktN",
+  "https://wapo.st/45Umavr",
+  "https://wapo.st/3XlJcaq",
+];
+const portfolioFallback = [
+  {
+    url: "https://wapo.st/4lK1zjz",
+    title: "Meet the top donors to Trump’s $239 million inauguration fund",
+    image: "/images/projects/meet-the-top-donors-to-trump-s-239-million-inaugur.jpg",
+  },
+  {
+    url: "https://wapo.st/3WjjAKt",
+    title: "Tracking who Trump is appointing to fill key administration roles",
+    image: "/images/projects/tracking-who-trump-is-appointing-to-fill-key-admin.jpg",
+  },
+  {
+    url: "https://wapo.st/3XAaHMz",
+    title: "Mapping 8 paths to victory for Harris and Trump in the 2024 election",
+    image: "/images/projects/mapping-8-paths-to-victory-for-harris-and-trump-in.jpg",
+  },
+  {
+    url: "https://wapo.st/3OssBQh",
+    title: "How senators voted on a bill to avert a government shutdown",
+    image: "/images/projects/how-senators-voted-on-a-bill-to-avert-a-government.jpg",
+  },
+  {
+    url: "https://wapo.st/4lRmktN",
+    title: "Trump’s first 100 days, in 10 charts",
+    image: "/images/projects/trump-s-first-100-days-in-10-charts.jpg",
+  },
+  {
+    url: "https://wapo.st/45Umavr",
+    title: "How every House member voted on Trump’s big tax bill",
+    image: "/images/projects/how-every-house-member-voted-on-trump-s-big-tax-bi.jpg",
+  },
+  {
+    url: "https://wapo.st/3XlJcaq",
+    title: "The major Supreme Court decisions in 2025",
+    image: "/images/projects/the-major-supreme-court-decisions-in-2025.jpg",
+  },
+];
+const portfolioProjects = portfolioLinks
+  .map((url) => projects.find((p) => p.data.externalUrl === url))
+  .filter(Boolean);
+const portfolioItems =
+  portfolioProjects.length > 0
+    ? portfolioProjects.map((project) => ({
+        url: project.data.externalUrl,
+        title: project.data.title,
+        image: project.data.heroImage,
+      }))
+    : portfolioFallback;
+const allProjects = sorted;
+const wallSource = allProjects
+  .filter((p) => p.data.heroImage)
+  .map((p) => ({
+    url: p.data.externalUrl || `/projects/${p.slug}/`,
+    title: p.data.title,
+    image: p.data.heroImage,
+  }));
+
+function shuffle(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+const marqueeItems = wallSource.length ? shuffle(wallSource) : shuffle(portfolioItems);
+const marqueeRowTwo = wallSource.length ? shuffle(wallSource) : shuffle(portfolioItems);
+const marqueeRowThree = wallSource.length ? shuffle(wallSource) : shuffle(portfolioItems);
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+function formatDisplayDate(dateText) {
+  const parsed = new Date(dateText);
+  return Number.isNaN(parsed.getTime()) ? dateText : dateFormatter.format(parsed);
+}
 ---
 <BaseLayout title="Work | Nick Mourtoupalas" description="Selected work and case studies.">
   <Fragment slot="header"><Header /></Fragment>
 
   <section class="panel" style="margin-top:18px;">
-    <div class="kicker">Work</div>
-    <h1 class="h1">Selected projects</h1>
-    <p class="lead">Placeholder: short sentence about what these projects demonstrate and what your role typically includes.</p>
+    <h1 class="h1">Graphics</h1>
+  </section>
 
-    <div class="grid" style="margin-top:14px;">
-      {sorted.map((p) => (
-        <div class="col-12 col-6">
-          <ProjectCard project={p} />
-        </div>
-      ))}
+  <section class="work-wall" aria-label="Graphics portfolio thumbnails">
+    <div class="wall-row">
+      <div class="wall-track">
+        {[...marqueeItems, ...marqueeItems].map((item) => (
+          <a
+            class="wall-item"
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.title}
+          >
+            <img
+              class="wall-thumb"
+              src={item.image}
+              alt={item.title}
+              loading="lazy"
+              width="200"
+              height="133"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="wall-row row-staggered">
+      <div class="wall-track">
+        {[...marqueeRowTwo, ...marqueeRowTwo].map((item) => (
+          <a
+            class="wall-item"
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.title}
+          >
+            <img
+              class="wall-thumb"
+              src={item.image}
+              alt={item.title}
+              loading="lazy"
+              width="200"
+              height="133"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="wall-row row-staggered-two">
+      <div class="wall-track">
+        {[...marqueeRowThree, ...marqueeRowThree].map((item) => (
+          <a
+            class="wall-item"
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.title}
+          >
+            <img
+              class="wall-thumb"
+              src={item.image}
+              alt={item.title}
+              loading="lazy"
+              width="200"
+              height="133"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:18px;">
+    <h2 class="h2" style="margin-top:36px;">All projects</h2>
+    <div class="feature-list" style="margin-top:14px;">
+      {allProjects.map((p, index) => {
+        const href = p.data.externalUrl || `/projects/${p.slug}/`;
+        const target = p.data.externalUrl ? "_blank" : "_self";
+        return (
+          <a
+            class={`feature-row ${index % 2 ? "is-reversed" : ""}`}
+            href={href}
+            target={target}
+            rel={p.data.externalUrl ? "noopener noreferrer" : ""}
+            aria-label={p.data.title}
+          >
+            <div class="feature-media">
+              {p.data.heroImage ? (
+                <img
+                  class="feature-image"
+                  src={p.data.heroImage}
+                  alt={p.data.title}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="feature-image feature-placeholder">{p.data.title}</div>
+              )}
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-meta">{formatDisplayDate(p.data.date)}</div>
+              <h3 class="feature-title">{p.data.title}</h3>
+              <p class="feature-description">{p.data.description}</p>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M14 4h6v6" />
+                  <path d="M20 4 11 13" />
+                  <path d="M20 13v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h3" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        );
+      })}
     </div>
   </section>
 
   <Fragment slot="footer"><Footer /></Fragment>
 </BaseLayout>
+
+<style>
+  :global(:root) {
+    --nav-height: 64px;
+    --header-bg: #171b21;
+    --header-text: #ffffff;
+    --header-border: #2d323a;
+  }
+
+  :global(body),
+  :global(main) {
+    background: #05070b;
+  }
+
+  .panel .h1,
+  .panel .h2 {
+    color: #ffffff;
+  }
+
+  .work-wall {
+    --wall-gap: 12px;
+    --wall-width: clamp(140px, 16vw, 220px);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-top: 18px;
+    overflow: hidden;
+    display: grid;
+    gap: var(--wall-gap);
+  }
+
+  .wall-row {
+    overflow: hidden;
+  }
+
+  .wall-track {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wall-gap);
+    width: max-content;
+    animation: pan-left 300s linear infinite;
+  }
+
+  .row-staggered .wall-track {
+    --stagger-offset: calc((var(--wall-width) + var(--wall-gap)) / -2);
+    animation-name: pan-left-staggered;
+  }
+
+  .row-staggered-two .wall-track {
+    --stagger-offset: calc(var(--wall-width) + var(--wall-gap));
+    animation-name: pan-left-staggered-two;
+  }
+
+  .wall-item {
+    width: var(--wall-width);
+    flex: 0 0 var(--wall-width);
+    aspect-ratio: 200 / 133;
+    display: block;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #2a2d33;
+    background: #11141a;
+  }
+
+  .wall-thumb {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.28s ease, filter 0.28s ease;
+  }
+
+  .wall-item:hover .wall-thumb {
+    transform: scale(1.03);
+    filter: brightness(0.95);
+  }
+
+  @keyframes pan-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes pan-left-staggered {
+    from {
+      transform: translateX(var(--stagger-offset));
+    }
+    to {
+      transform: translateX(calc(-50% + var(--stagger-offset)));
+    }
+  }
+
+  @keyframes pan-left-staggered-two {
+    from {
+      transform: translateX(calc(var(--stagger-offset) * -1));
+    }
+    to {
+      transform: translateX(calc(-50% - var(--stagger-offset)));
+    }
+  }
+
+  .feature-list {
+    display: grid;
+    gap: 56px;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 22px;
+  }
+
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .feature-media {
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid #2a2d33;
+    background: #11141a;
+    aspect-ratio: 200 / 133;
+  }
+
+  .feature-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+
+  .feature-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 30px;
+    font-family: "Merriweather", serif;
+    font-size: 1.3rem;
+    color: #555;
+    background: linear-gradient(135deg, #ececec 0%, #dbdbdb 100%);
+    text-align: center;
+  }
+
+  .feature-card {
+    position: relative;
+    background: #171b21;
+    border: 1px solid #2d323a;
+    color: #f2f4f7;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    padding: 16px 18px 18px;
+    max-width: 560px;
+  }
+
+  .feature-meta {
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    color: #a6adb9;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+  }
+
+  .feature-title {
+    font-size: clamp(1.5rem, 3vw, 2.15rem);
+    line-height: 1.12;
+    margin: 0 26px 10px 0;
+    color: #ffffff;
+    font-family: "Baskervville", "Baskervville Variable", Georgia, "Times New Roman", serif;
+    transition: color 0.2s ease;
+  }
+
+  .feature-description {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+    line-height: 1.38;
+    color: #d4d9e2;
+    opacity: 1;
+    max-width: 42ch;
+  }
+
+  .feature-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    line-height: 0;
+    color: #a6adb9;
+  }
+
+  .feature-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: #a6adb9;
+    stroke-width: 2.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feature-row:hover {
+    text-decoration: none;
+  }
+
+  .feature-row:hover .feature-image {
+    transform: scale(1.05);
+    filter: brightness(0.9);
+  }
+
+  .feature-row:hover .feature-title {
+    color: var(--link);
+  }
+
+  @media (min-width: 980px) {
+    .feature-list {
+      gap: 86px;
+      max-width: 1200px;
+      padding-inline: 80px;
+    }
+
+    .feature-row {
+      grid-template-columns: minmax(0, 50%) minmax(0, 50%);
+      align-items: center;
+      gap: 0;
+    }
+
+    .feature-row .feature-media {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .feature-row .feature-card {
+      grid-column: 1;
+      grid-row: 1;
+      z-index: 2;
+      margin-right: -60px;
+      max-width: 620px;
+    }
+
+    .feature-row.is-reversed .feature-media {
+      grid-column: 1;
+    }
+
+    .feature-row.is-reversed .feature-card {
+      grid-column: 2;
+      margin-right: 0;
+      margin-left: -60px;
+    }
+
+    .feature-row .feature-image {
+    }
+  }
+</style>

@@ -1,163 +1,134 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import https from 'https';
 
 // Helper to get __dirname in ESM
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const args = process.argv.slice(2);
-const url = args[0];
+function fetchUrl(url) {
+    return new Promise((resolve, reject) => {
+        https.get(url, (res) => {
+            // Handle redirects
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                fetchUrl(res.headers.location).then(resolve).catch(reject);
+                return;
+            }
 
-if (!url) {
-  console.error("Please provide a URL.");
-  process.exit(1);
-}
-
-// Function to decode HTML entities (basic version for common ones)
-function decodeHtmlEntities(str) {
-  if (!str) return '';
-  return str
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&rsquo;/g, "'")
-    .replace(/&lsquo;/g, "'")
-    .replace(/&ldquo;/g, '"')
-    .replace(/&rdquo;/g, '"');
-}
-
-async function fetchMetadata(targetUrl) {
-  try {
-    console.log(`Fetching ${targetUrl}...`);
-    const res = await fetch(targetUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      }
+            let data = '';
+            res.on('data', (chunk) => data += chunk);
+            res.on('end', () => resolve(data));
+        }).on('error', reject);
     });
+}
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
+function downloadImageHttps(url, localPath) {
+    return new Promise((resolve, reject) => {
+        https.get(url, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                downloadImageHttps(res.headers.location, localPath).then(resolve).catch(reject);
+                return;
+            }
+            const file = fs.open(localPath, 'w').then(fileHandle => {
+                const stream = fileHandle.createWriteStream();
+                res.pipe(stream);
+                stream.on('finish', () => {
+                    stream.close();
+                    resolve();
+                });
+            });
+        }).on('error', reject);
+    });
+}
 
-    const html = await res.text();
+// Native fetch in Node 20 is available, but let's use a robust helper matching the environment
+// Actually, Node 18+ has global fetch. use that for simplicity if environment supports it.
+// user has node 20.
 
-    // Simple regex extraction
-    const getMeta = (prop) => {
-      const match = html.match(new RegExp(`<meta property="${prop}" content="([^"]*)"`)) ||
-        html.match(new RegExp(`<meta name="${prop}" content="([^"]*)"`));
-      return match ? decodeHtmlEntities(match[1]) : null;
-    };
-
-    let title = getMeta('og:title') || getMeta('twitter:title');
-    // Fallback regex for title tag
-    if (!title) {
-      const titleMatch = html.match(/<title>([^<]*)<\/title>/i);
-      if (titleMatch) title = decodeHtmlEntities(titleMatch[1]);
-    }
-
-    const description = getMeta('og:description') || getMeta('description') || '';
-    const image = getMeta('og:image') || getMeta('twitter:image');
-    let date = getMeta('article:published_time');
-
-    // If no date found in meta, try to find it in JSON-LD or fallback to today
-    if (!date) {
-      const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-      if (jsonLdMatch) {
-        try {
-          const json = JSON.parse(jsonLdMatch[1]);
-          date = json.datePublished || json.dateCreated;
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
-
-    // Fallback to today if still null
-    date = date || new Date().toISOString();
-
-    // Attempt to format date to YYYY-MM-DD
+export async function processArticle(targetUrl) {
     try {
-      date = new Date(date).toISOString().split('T')[0];
-    } catch (e) {
-      date = new Date().toISOString().split('T')[0];
-    }
+        console.log(`Processing: ${targetUrl}`);
+        const res = await fetch(targetUrl);
 
-    // Clean title (remove " - The Washington Post" etc)
-    if (title) {
-      title = title.replace(/ - The Washington Post$/, '');
-    } else {
-      title = 'Untitled';
-    }
+        if (!res.ok) {
+            console.error(`Failed to fetch ${targetUrl}: ${res.status}`);
+            return;
+        }
 
-    return { title, description, image, date, url: targetUrl };
+        const html = await res.text();
 
-  } catch (error) {
-    console.error(`Error processing ${targetUrl}:`, error.message);
-    return null;
-  }
-}
+        // Regex extraction
+        const getMeta = (prop) => {
+            const regex = new RegExp(`<meta (?:property|name)="${prop}" content="([^"]*)"`, 'i');
+            const match = html.match(regex);
+            return match ? match[1] : null;
+        };
 
-async function downloadImage(imageUrl, slug) {
-  if (!imageUrl) return null;
+        let title = getMeta('og:title') || getMeta('twitter:title') || 'Untitled';
+        // Clean title (remove " - The Washington Post" etc if needed, though usually OG title is good)
+        const description = getMeta('og:description') || getMeta('description') || '';
+        const image = getMeta('og:image') || getMeta('twitter:image');
+        let date = getMeta('article:published_time');
 
-  try {
-    // Basic extension detection
-    let ext = path.extname(new URL(imageUrl).pathname) || '.jpg';
-    if (ext === '.') ext = '.jpg';
+        // Fallback date to today if missing
+        if (!date) {
+            // Try to find json-ld date
+            const jsonLdMatch = html.match(/"datePublished":"([^"]*)"/);
+            if (jsonLdMatch) date = jsonLdMatch[1];
+        }
 
-    const filename = `${slug}${ext}`;
-    const relativePath = `/images/projects/${filename}`;
-    const localPath = path.join(__dirname, '../public/images/projects', filename);
+        if (!date) date = new Date().toISOString();
 
-    // Ensure directory exists
-    await fs.mkdir(path.dirname(localPath), { recursive: true });
+        try {
+            date = new Date(date).toISOString().split('T')[0];
+        } catch (e) {
+            date = new Date().toISOString().split('T')[0];
+        }
 
-    const res = await fetch(imageUrl);
-    if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`);
+        // Slug generation
+        const slug = title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '')
+            .substring(0, 50); // Limit slug length
 
-    const buffer = Buffer.from(await res.arrayBuffer());
-    await fs.writeFile(localPath, buffer);
+        // Download image
+        let imagePath = '';
+        if (image) {
+            const ext = path.extname(image.split('?')[0]) || '.jpg';
+            const filename = `${slug}${ext}`;
+            const relativePath = `/images/projects/${filename}`;
+            const localPath = path.join(__dirname, '../public/images/projects', filename);
 
-    console.log(`Downloaded image to ${localPath}`);
-    return relativePath;
-  } catch (error) {
-    console.error("Failed to download image:", error.message);
-    return null; // Return null so we can still Create the project file
-  }
-}
+            await fs.mkdir(path.dirname(localPath), { recursive: true });
 
-async function createProjectFile(data) {
-  const slug = data.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
-    .substring(0, 50); // Limit slug length
+            const imgRes = await fetch(image);
+            if (imgRes.ok) {
+                const buffer = Buffer.from(await imgRes.arrayBuffer());
+                await fs.writeFile(localPath, buffer);
+                imagePath = relativePath;
+                console.log(`  Saved image: ${filename}`);
+            } else {
+                console.error(`  Failed to download image: ${image}`);
+            }
+        }
 
-  // Prevent overwrite or handle uniqueness? For now, let's just overwrite or append random if needed.
-  // But standard overwriting is fine for corrections.
-
-  const imagePath = await downloadImage(data.image, slug);
-
-  const content = `---
-title: "${data.title.replace(/"/g, '\\"')}"
-description: "${data.description.replace(/"/g, '\\"')}"
-date: "${data.date}"
+        const content = `---
+title: "${title.replace(/"/g, '\\"')}"
+description: "${description.replace(/"/g, '\\"')}"
+date: "${date}"
 role: "Graphics Reporter"
 featured: false
-externalUrl: "${data.url}"
-heroImage: "${imagePath || ''}"
+externalUrl: "${targetUrl}"
+heroImage: "${imagePath}"
 ---
 `;
 
-  const filePath = path.join(__dirname, `../src/content/projects/${slug}.md`);
-  await fs.writeFile(filePath, content);
-  console.log(`Created project file: ${filePath}`);
-}
+        const filePath = path.join(__dirname, `../src/content/projects/${slug}.md`);
+        await fs.writeFile(filePath, content);
+        console.log(`  Created: ${slug}.md`);
 
-// Run
-const data = await fetchMetadata(url);
-if (data) {
-  await createProjectFile(data);
+    } catch (error) {
+        console.error(`Error processing ${targetUrl}:`, error);
+    }
 }

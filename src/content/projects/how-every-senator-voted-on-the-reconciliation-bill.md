@@ -1,7 +1,7 @@
 ---
 title: "How every senator voted on the reconciliation bill"
 description: "See how each senator voted. "
-date: "2026-02-14"
+date: "2025-07-01"
 role: "Graphics Reporter"
 featured: false
 externalUrl: "https://wapo.st/4bGpiPj"
