@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Hero from "../components/Hero.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import SocialLinks from "../components/SocialLinks.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
@@ -25,6 +26,28 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
         {featured.map((p) => (
           <ProjectCard project={p} />
         ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="about-contact" class="about-section">
+    <div class="container about-wrap">
+      <h2 class="about-title">About & Contact</h2>
+      <div class="about-grid">
+        <div class="about-copy">
+          <p>
+            Nick Mourtoupalas is a graphics and data visualization journalist based in Washington, D.C. He reports and designs visual stories focused on politics, elections, and public policy.
+          </p>
+          <SocialLinks className="about-social" />
+        </div>
+        <div class="about-photo-frame">
+          <img
+            class="about-photo"
+            src="/images/headshot.jpg"
+            alt="Nick Mourtoupalas headshot"
+            loading="lazy"
+          />
+        </div>
       </div>
     </div>
   </section>
@@ -66,9 +89,100 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     gap: 40px;
   }
 
+  .about-section {
+    background: #ffffff;
+    border-top: 1px solid #e4e8ef;
+    padding: 54px 0 70px;
+  }
+
+  .about-wrap {
+    max-width: 1200px;
+  }
+
+  .about-title {
+    text-align: left;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.9rem, 4.2vw, 3rem);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    width: min(784px, 100%);
+    margin: 0 auto 38px;
+    color: #1f2a44;
+    font-style: normal;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 540px) minmax(180px, 240px);
+    align-items: start;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .about-copy {
+    font-family: 'Inter', sans-serif;
+    color: #1f2a44;
+    font-size: clamp(0.95rem, 1.55vw, 1.11rem);
+    line-height: 1.6;
+    max-width: 540px;
+    justify-self: start;
+  }
+
+  .about-copy p {
+    margin: 0 0 26px;
+    max-width: 90%;
+  }
+
+  :global(.about-social) {
+    --social-size: 38px;
+    --social-icon-size: 19px;
+    --social-bg: #ffffff;
+    --social-border: #c9d1de;
+    --social-color: #364154;
+    --social-hover-bg: #e8edf5;
+    --social-hover-border: #aeb9ca;
+    --social-hover-color: #1f2a44;
+  }
+
+  .about-photo-frame {
+    width: 100%;
+    max-width: 240px;
+    justify-self: start;
+    align-self: start;
+    border: 6px solid #dde2ea;
+    background: #ffffff;
+    padding: 0;
+  }
+
+  .about-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
   @media (max-width: 600px) {
     .project-grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .about-copy p {
+      max-width: none;
+    }
+
+    .about-photo-frame {
+      max-width: 280px;
+      width: 100%;
+      justify-self: start;
     }
   }
 </style>
