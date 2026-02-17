@@ -96,11 +96,13 @@ function formatDisplayDate(dateText) {
   return Number.isNaN(parsed.getTime()) ? dateText : dateFormatter.format(parsed);
 }
 ---
-<BaseLayout title="Work | Nick Mourtoupalas" description="Selected work and case studies.">
+<BaseLayout title="Graphics | Nick Mourtoupalas" description="Selected work and case studies.">
   <Fragment slot="header"><Header /></Fragment>
 
-  <section class="panel" style="margin-top:18px;">
-    <h1 class="h1">Graphics</h1>
+  <section class="panel graphics-heading-panel">
+    <div class="graphics-heading content-frame">
+      <h1 class="graphics-title">Graphics</h1>
+    </div>
   </section>
 
   <section class="work-wall" aria-label="Graphics portfolio thumbnails">
@@ -175,8 +177,8 @@ function formatDisplayDate(dateText) {
   </section>
 
   <section class="panel" style="margin-top:18px;">
-    <h2 class="h2" style="margin-top:36px;">All projects</h2>
-    <div class="feature-list" style="margin-top:14px;">
+    <h2 class="graphics-title projects-title content-frame">All projects</h2>
+    <div class="feature-list content-frame">
       {allProjects.map((p, index) => {
         const href = p.data.externalUrl || `/projects/${p.slug}/`;
         const target = p.data.externalUrl ? "_blank" : "_self";
@@ -223,13 +225,6 @@ function formatDisplayDate(dateText) {
 </BaseLayout>
 
 <style>
-  :global(:root) {
-    --nav-height: 64px;
-    --header-bg: #171b21;
-    --header-text: #ffffff;
-    --header-border: #2d323a;
-  }
-
   :global(body),
   :global(main) {
     background: #05070b;
@@ -240,11 +235,49 @@ function formatDisplayDate(dateText) {
     color: #ffffff;
   }
 
+  .graphics-heading {
+    margin: 0;
+    padding-left: 2px;
+  }
+
+  .graphics-title {
+    margin: 0;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 0.85;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-size: 7.5rem;
+    text-align: left;
+  }
+
+  .graphics-heading-panel {
+    margin-top: 25px;
+    margin-bottom: 0px;
+  }
+
+  .content-frame {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: clamp(22px, 6vw, 80px);
+  }
+
+  .projects-title {
+    margin: 50px auto 25px;
+    color: #ffffff !important;
+    font-size: 3.75rem;
+  }
+
+  .panel .projects-title {
+    color: #ffffff !important;
+  }
+
   .work-wall {
     --wall-gap: 12px;
     --wall-width: clamp(140px, 16vw, 220px);
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
+    width: 100%;
+    margin-left: 0;
     margin-top: 18px;
     overflow: hidden;
     display: grid;
@@ -328,9 +361,8 @@ function formatDisplayDate(dateText) {
   .feature-list {
     display: grid;
     gap: 56px;
-    max-width: 1120px;
     margin-inline: auto;
-    padding-inline: 22px;
+    margin-top: 0;
   }
 
   .feature-row {
@@ -438,8 +470,6 @@ function formatDisplayDate(dateText) {
   @media (min-width: 980px) {
     .feature-list {
       gap: 86px;
-      max-width: 1200px;
-      padding-inline: 80px;
     }
 
     .feature-row {
@@ -472,6 +502,16 @@ function formatDisplayDate(dateText) {
     }
 
     .feature-row .feature-image {
+    }
+  }
+
+  @media (max-width: 900px) {
+    .graphics-title {
+      font-size: 3.5rem;
+    }
+
+    .projects-title {
+      font-size: 1.75rem;
     }
   }
 </style>
