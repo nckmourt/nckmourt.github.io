@@ -1,178 +1,297 @@
 ---
 const slides = [
-  "/slides/1.jpg",
-  "/slides/2.jpg",
-  "/slides/3.jpg",
+  { type: "image", src: "/slides/1.jpg", alt: "Featured slide 1" },
+  { type: "image", src: "/slides/2.jpg", alt: "Featured slide 2" },
+  { type: "image", src: "/slides/3.jpg", alt: "Featured slide 3" },
+  { type: "placeholder", label: "Add /public/slides/4.jpg" },
 ];
 ---
-<section class="hero-split">
-  <!-- Left Column: Slideshow -->
-  <div class="hero-left">
-    <div class="slideshow-container">
-      {slides.map((src, index) => (
-        <img 
-          src={src} 
-          class={`slide ${index === 0 ? 'active' : ''}`} 
-          alt="" 
-        />
+<section class="hero-home" aria-label="Featured image carousel">
+  <div class="carousel-frame">
+    <div class="carousel-track">
+      {slides.map((slide, index) => (
+        <div class={`carousel-slide ${index === 0 ? "is-active" : ""}`}>
+          {slide.type === "image" ? (
+            <img src={slide.src} alt={slide.alt} loading={index === 0 ? "eager" : "lazy"} />
+          ) : (
+            <div class="slide-placeholder">
+              <span>{slide.label}</span>
+            </div>
+          )}
+        </div>
       ))}
-      <div class="placeholder-overlay">
-        <p>Add images to public/slides/ (1.jpg, 2.jpg, 3.jpg)</p>
-      </div>
+    </div>
+    <div class="carousel-controls" aria-label="Carousel slide controls">
+      {slides.map((_, index) => (
+        <button
+          class={`carousel-dot ${index === 0 ? "is-active" : ""}`}
+          type="button"
+          aria-label={`Go to slide ${index + 1}`}
+          data-slide-index={index}
+        ></button>
+      ))}
     </div>
   </div>
 
-  <!-- Right Column: Text/Intro -->
-  <div class="hero-right">
-    <div class="content-wrapper">
-      <h1 class="hero-name">
-        <span>NICK</span>
-        <span>MOURTOUPALAS</span>
-      </h1>
-      
-      <p class="hero-bio">
-        I build visual systems that make complex institutions understandable. I report, analyze, and design visual tools that explain how power, policy, markets, and communities shape daily life.
-      </p>
-    </div>
+  <div class="hero-intro container">
+    <h1 class="hero-name">Nick Mourtoupalas</h1>
+    <p class="hero-bio">
+      I build visual systems that make complex institutions understandable. I report, analyze, and design visual
+      tools that explain how power, policy, markets, and communities shape daily life.
+    </p>
   </div>
 </section>
 
 <script>
-  // Simple slideshow logic
-  const slides = document.querySelectorAll('.slide');
+  const carouselFrame = document.querySelector(".carousel-frame");
+  const carouselSlides = document.querySelectorAll(".carousel-slide");
+  const carouselDots = document.querySelectorAll(".carousel-dot");
   let current = 0;
-  const intervalTime = 3000; // 3 seconds
+  const intervalTime = 4200;
+  let autoplayTimer;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let suppressClickUntil = 0;
 
-  function nextSlide() {
-    slides[current].classList.remove('active');
-    current = (current + 1) % slides.length;
-    slides[current].classList.add('active');
+  function setActiveSlide(index) {
+    carouselSlides[current]?.classList.remove("is-active");
+    carouselDots[current]?.classList.remove("is-active");
+    current = index;
+    carouselSlides[current]?.classList.add("is-active");
+    carouselDots[current]?.classList.add("is-active");
   }
 
-  if (slides.length > 0) {
-    setInterval(nextSlide, intervalTime);
+  function advanceSlide() {
+    if (carouselSlides.length <= 1) return;
+    setActiveSlide((current + 1) % carouselSlides.length);
+  }
+
+  function previousSlide() {
+    if (carouselSlides.length <= 1) return;
+    setActiveSlide((current - 1 + carouselSlides.length) % carouselSlides.length);
+  }
+
+  function scheduleNextAdvance() {
+    clearTimeout(autoplayTimer);
+    autoplayTimer = setTimeout(() => {
+      advanceSlide();
+      scheduleNextAdvance();
+    }, intervalTime);
+  }
+
+  if (carouselSlides.length > 0) {
+    carouselFrame?.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    carouselFrame?.addEventListener("touchend", (event) => {
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      const swipeThreshold = 42;
+
+      if (absX > swipeThreshold && absX > absY) {
+        if (deltaX < 0) {
+          advanceSlide();
+        } else {
+          previousSlide();
+        }
+        suppressClickUntil = Date.now() + 350;
+        scheduleNextAdvance();
+      }
+    }, { passive: true });
+
+    carouselFrame?.addEventListener("click", (event) => {
+      if (Date.now() < suppressClickUntil) return;
+
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest(".carousel-controls")) return;
+
+      const rect = carouselFrame.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+
+      if (clickX < rect.width / 2) {
+        previousSlide();
+      } else {
+        advanceSlide();
+      }
+      scheduleNextAdvance();
+    });
+
+    carouselDots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        const index = Number(dot.getAttribute("data-slide-index"));
+        if (!Number.isNaN(index)) {
+          setActiveSlide(index);
+          scheduleNextAdvance();
+        }
+      });
+    });
+
+    scheduleNextAdvance();
   }
 </script>
 
 <style>
-  .hero-split {
-    display: flex;
-    /* Height calculation: 100vh minus header height */
-    min-height: calc(100vh - 80px); /* 80px matches nav-height */
+  .hero-home {
     width: 100%;
+    background: #111111;
   }
 
-  /* Left Column */
-  .hero-left {
-    flex: 1;
-    background-color: var(--bg); /* Use global bg variable */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* Important for slideshow */
+  .carousel-frame {
+    width: 100%;
+    height: min(66vh, 760px);
+    min-height: 360px;
     position: relative;
-    border-right: 1px solid rgba(128,128,128,0.1); 
+    overflow: hidden;
+    border-bottom: 1px solid #202630;
   }
 
-  .slideshow-container {
+  .carousel-track {
     width: 100%;
     height: 100%;
     position: relative;
   }
 
-  .slide {
+  .carousel-slide {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Replaces background-size: cover */
+    inset: 0;
     opacity: 0;
-    transform: translateX(100%); /* Start off-screen right */
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease; /* iPhone swipe feel */
-    z-index: 1;
-  }
-
-  .slide.active {
-    opacity: 1;
-    transform: translateX(0);
-    z-index: 2;
-  }
-
-  /* 
-     Optional: If you want the previous slide to slide OUT to the left, 
-     you need more complex JS. For simple "stacking" or fading in/out with slide motion:
-     The current CSS slides the NEW one IN from the right over the old one.
-  */
-
-  .placeholder-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 0;
+    transform: scale(1.02);
+    transition: opacity 0.9s ease, transform 1.2s ease;
     pointer-events: none;
-    text-align: center;
-    color: #ccc;
-    font-family: 'Inter', sans-serif;
-  }
-  
-  /* Hide placeholder if slides are working */
-  .slide.active ~ .placeholder-overlay {
-    display: none;
   }
 
-  /* Right Column */
-  .hero-right {
-    flex: 1;
-    background-color: var(--hero-blue); 
-    color: #ffffff;
-    display: flex;
+  .carousel-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .slide-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(95, 121, 170, 0.35), transparent 42%),
+      radial-gradient(circle at 80% 70%, rgba(68, 85, 118, 0.35), transparent 46%),
+      linear-gradient(135deg, #1b2330, #0b1119 55%, #080d14);
+    color: #d4dde8;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .carousel-controls {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 60px;
+    gap: 10px;
+    z-index: 8;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(17, 17, 17, 0.42);
+    backdrop-filter: blur(2px);
   }
 
-  .content-wrapper {
-    width: min-content; /* Force width to match the longest word (MOURTOUPALAS) */
-    max-width: 100%;
-    text-align: left;
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  }
+
+  .carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.95);
+    transform: scale(1.08);
+  }
+
+  .carousel-dot.is-active {
+    background: #ffffff;
+    border-color: #ffffff;
+  }
+
+  .hero-intro {
+    padding-top: clamp(24px, 5vw, 52px);
+    padding-bottom: clamp(24px, 4vw, 40px);
+    background: #111111;
   }
 
   .hero-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-weight: 400; 
-    font-size: 7.5rem; /* Reduced from 10rem */
-    line-height: 0.85; /* Tight stack */
-    letter-spacing: 0.02em;
+    margin: 0 0 12px;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 24px;
     color: #ffffff;
-  }
-  
-  .hero-bio {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.9);
-    /* No max-width needed, it will fill the min-content wrapper */
+    line-height: 0.95;
   }
 
-  /* Responsive Design */
+  .hero-bio {
+    margin: 0;
+    max-width: 72ch;
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: rgba(232, 237, 244, 0.92);
+  }
+
   @media (max-width: 900px) {
-    .hero-split {
-      flex-direction: column;
+    .carousel-frame {
+      height: min(54vh, 520px);
+      min-height: 280px;
     }
-    
-    .hero-left, .hero-right {
-      min-height: 50vh;
-      padding: 40px 20px;
+
+    .carousel-controls {
+      bottom: 14px;
+      gap: 8px;
+    }
+
+    .carousel-dot {
+      width: 9px;
+      height: 9px;
     }
 
     .hero-name {
-      font-size: 3.5rem;
+      font-size: clamp(1.8rem, 8vw, 2.6rem);
+      margin-bottom: 10px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-intro {
+      padding-top: 18px;
+      padding-bottom: 26px;
+    }
+
+    .hero-bio {
+      font-size: 15px;
+      line-height: 1.6;
     }
   }
 </style>

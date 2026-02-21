@@ -49,7 +49,7 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
             complex systems clear. He works from raw datasets to finished graphics, often under breaking news
             deadlines, and builds reusable tools that strengthen newsroom coverage over time.
           </p>
-          <SocialLinks className="about-social" />
+          <SocialLinks className="about-social" iconSet="navWhite" />
         </div>
         <div class="about-photo-frame">
           <img
@@ -67,9 +67,19 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
 </BaseLayout>
 
 <style>
+  :global(body) {
+    background: 111111#;
+    color: #f3f6fb;
+  }
+
   .section {
     padding: 80px 0;
-    background: var(--bg);
+    background: #111111;
+    color: #f3f6fb;
+    --accent: #f4f7fc;
+    --text: #e8edf6;
+    --muted: #a8b3c6;
+    --link: #f4f7fc;
   }
 
   .section-header {
@@ -77,7 +87,7 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 40px;
-    border-bottom: 2px solid var(--accent);
+    border-bottom: 1px solid #2a3140;
     padding-bottom: 10px;
   }
 
@@ -90,8 +100,14 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
 
   .view-all {
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
+    color: #f4f7fc;
+  }
+
+  .view-all:hover {
+    color: #dbe6ff;
+    text-decoration: none;
   }
 
   .project-grid {
@@ -101,9 +117,10 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
   }
 
   .about-section {
-    background: #ffffff;
-    border-top: 1px solid #e4e8ef;
+    background: #111111;
+    border-top: 1px solid #232b3a;
     padding: 54px 0 70px;
+    color: #f3f6fb;
   }
 
   .about-wrap {
@@ -119,7 +136,7 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     text-transform: uppercase;
     width: min(784px, 100%);
     margin: 0 auto 38px;
-    color: #1f2a44;
+    color: #f4f7fc;
     font-style: normal;
   }
 
@@ -133,8 +150,8 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
 
   .about-copy {
     font-family: 'Inter', sans-serif;
-    color: #1f2a44;
-    font-size: clamp(0.95rem, 1.55vw, 1.11rem);
+    color: #f3f6fb;
+    font-size: 16px;
     line-height: 1.6;
     max-width: 540px;
     justify-self: start;
@@ -146,14 +163,13 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
   }
 
   :global(.about-social) {
-    --social-size: 28px;
-    --social-icon-size: 14px;
-    --social-bg: #ffffff;
-    --social-border: #c9d1de;
-    --social-color: #8a8f99;
-    --social-hover-bg: #e8edf5;
-    --social-hover-border: #aeb9ca;
-    --social-hover-color: #6f7480;
+    --social-size: 26px;
+    --social-bg: #1c2431;
+    --social-border: #3a4558;
+    --social-color: #ffffff;
+    --social-hover-bg: #253246;
+    --social-hover-border: #4f617f;
+    --social-hover-color: #ffffff;
   }
 
   .about-photo-frame {
@@ -161,8 +177,8 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     max-width: 240px;
     justify-self: start;
     align-self: start;
-    border: 6px solid #dde2ea;
-    background: #ffffff;
+    border: 6px solid #2d3748;
+    background: #111722;
     padding: 0;
   }
 
@@ -172,6 +188,33 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     height: auto;
     aspect-ratio: 1 / 1;
     object-fit: cover;
+  }
+
+  :global(.section .project-card .meta) {
+    color: #aeb8cb;
+  }
+
+  :global(.section .project-card .title) {
+    color: #ffffff;
+  }
+
+  :global(.section .project-card .description) {
+    color: #e1e7f2;
+    opacity: 1;
+  }
+
+  :global(.section .project-card .thumb-container) {
+    background: #0d131d;
+    border-color: #2a3446;
+  }
+
+  :global(.site-footer) {
+    background: #111111;
+    border-top: 1px solid #232b3a;
+  }
+
+  :global(.site-footer .footer-text) {
+    color: #ffffff;
   }
 
   @media (max-width: 600px) {
@@ -191,9 +234,10 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     }
 
     .about-photo-frame {
-      max-width: 280px;
-      width: 100%;
-      justify-self: start;
+      width: 200px;
+      height: 200px;
+      max-width: 200px;
+      justify-self: center;
     }
   }
 </style>

@@ -1,28 +1,22 @@
 ---
 import SocialLinks from "./SocialLinks.astro";
 
-const nav = [
+const navMain = [
   { href: "/", label: "Home" },
-  { href: "/graphics/", label: "Graphics" },
   { href: "/photo/", label: "Photo" },
   { href: "/#about-contact", label: "About" },
+];
+
+const graphicsDropdown = [
+  { href: "/graphics/?category=votes", label: "Votes" },
+  { href: "/graphics/?category=trackers", label: "Trackers" },
+  { href: "/graphics/?category=maps", label: "Maps" },
+  { href: "/graphics/?category=explainers", label: "Explainers" },
+  { href: "/graphics/?category=breaking-news", label: "Breaking News" },
 ];
 ---
 <header class="site-header">
   <div class="header-inner">
-    <div class="brand-cluster">
-      <a href="/" class="brand">
-        <span class="brand-name">NICK MOURTOUPALAS</span>
-      </a>
-      <SocialLinks className="nav-social" />
-    </div>
-
-    <nav class="site-nav">
-      {nav.map((item) => (
-        <a href={item.href} class="nav-link">{item.label}</a>
-      ))}
-    </nav>
-
     <details class="mobile-menu">
       <summary aria-label="Open navigation menu">
         <span class="hamburger" aria-hidden="true">
@@ -32,11 +26,44 @@ const nav = [
         </span>
       </summary>
       <nav class="mobile-nav">
-        {nav.map((item) => (
+        <a href="/" class="mobile-nav-link">Home</a>
+        <div class="mobile-submenu">
+          <button class="mobile-nav-link mobile-nav-trigger" type="button" aria-expanded="false">Graphics</button>
+          <div class="mobile-submenu-links">
+            {graphicsDropdown.map((item) => (
+              <a href={item.href} class="mobile-nav-link mobile-sub-link">{item.label}</a>
+            ))}
+          </div>
+        </div>
+        {navMain.slice(1).map((item) => (
           <a href={item.href} class="mobile-nav-link">{item.label}</a>
         ))}
+        <SocialLinks className="mobile-menu-social" iconSet="navWhite" />
       </nav>
     </details>
+
+    <a href="/" class="brand">
+      <span class="brand-name">NICK MOURTOUPALAS</span>
+    </a>
+
+    <SocialLinks className="nav-social" iconSet="navWhite" />
+
+    <nav class="site-nav">
+      <a href="/" class="nav-link">Home</a>
+
+      <div class="nav-dropdown">
+        <a href="/graphics/" class="nav-link nav-link-graphics" aria-haspopup="true">Graphics</a>
+        <div class="dropdown-menu" role="menu" aria-label="Graphics categories">
+          {graphicsDropdown.map((item) => (
+            <a href={item.href} class="dropdown-link" role="menuitem">{item.label}</a>
+          ))}
+        </div>
+      </div>
+
+      {navMain.slice(1).map((item) => (
+        <a href={item.href} class="nav-link">{item.label}</a>
+      ))}
+    </nav>
   </div>
 </header>
 
@@ -71,16 +98,13 @@ const nav = [
   }
 
   .brand-cluster {
-    display: inline-flex;
-    align-items: center;
-    gap: 34px;
-    min-width: 0;
+    display: none;
   }
 
   .brand-name {
     font-family: 'Bebas Neue', sans-serif; /* Bebas Neue */
     font-weight: 400; /* Bebas Neue is 400 by default but looks bold */
-    font-size: 20px;
+    font-size: 24px;
     letter-spacing: 0.05em;
     color: var(--header-text);
     text-transform: uppercase;
@@ -95,10 +119,77 @@ const nav = [
     margin-left: auto;
   }
 
-  .nav-social {
-    margin-left: 0;
-    --social-size: 22px;
-    --social-icon-size: 11px;
+  .nav-dropdown {
+    height: 100%;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .nav-dropdown::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    width: 220px;
+    height: 14px;
+    background: transparent;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    width: max-content;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--header-bg);
+    border: 1px solid var(--header-border);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+  }
+
+  .nav-dropdown:hover .dropdown-menu,
+  .nav-dropdown:focus-within .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .dropdown-link {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--header-text);
+    text-decoration: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .dropdown-link:hover {
+    text-decoration: none;
+    color: var(--link);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  :global(.nav-social) {
+    margin-left: 34px;
+    --social-size: 26px;
     --social-color: #ffffff;
     --social-hover-color: #ffffff;
   }
@@ -167,16 +258,34 @@ const nav = [
 
   .mobile-nav {
     position: absolute;
-    right: 0;
-    top: calc(100% + 10px);
-    min-width: 170px;
-    background: var(--header-bg);
-    border: 1px solid var(--header-border);
-    border-radius: 10px;
-    padding: 10px;
+    right: -8px;
+    top: calc(100% + 6px);
+    width: max-content;
+    max-width: calc(100vw - 28px);
+    background: #171b21;
+    border: 2px solid #2b3342;
+    border-radius: 24px;
+    padding: 20px 12px 14px;
     display: grid;
-    gap: 6px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    gap: 14px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+    transform-origin: top right;
+    pointer-events: none;
+    transition: opacity 240ms ease, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mobile-menu[open] .mobile-nav {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .mobile-menu.is-closing .mobile-nav {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+    pointer-events: none;
   }
 
   .mobile-nav-link {
@@ -186,15 +295,81 @@ const nav = [
     text-transform: uppercase;
     color: var(--header-text);
     text-decoration: none;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 4px 8px;
+    border-radius: 8px;
     line-height: 1;
+    text-align: left;
   }
 
   .mobile-nav-link:hover {
     text-decoration: none;
     color: var(--link);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .mobile-submenu {
+    display: grid;
+    gap: 0;
+  }
+
+  .mobile-nav-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .mobile-nav-trigger::after {
+    content: "";
+    width: 6px;
+    height: 10px;
+    background: #ffffff;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: transform 280ms ease;
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+
+  .mobile-submenu.is-open .mobile-nav-trigger::after {
+    transform: rotate(90deg);
+  }
+
+  .mobile-submenu-links {
+    display: grid;
+    gap: 6px;
+    margin-top: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition:
+      max-height 280ms ease,
+      opacity 220ms ease,
+      transform 280ms ease,
+      margin-top 280ms ease;
+  }
+
+  .mobile-submenu.is-open .mobile-submenu-links {
+    margin-top: 4px;
+    max-height: 220px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mobile-sub-link {
+    padding-left: 16px;
+    font-size: 18px;
+    opacity: 0.9;
   }
 
   @media (max-width: 900px) {
@@ -206,8 +381,11 @@ const nav = [
 
     .header-inner {
       display: flex !important;
+      position: relative;
+      align-items: center;
+      justify-content: center;
       padding: 0 20px;
-      gap: 12px;
+      gap: 0;
     }
 
     .site-nav {
@@ -216,28 +394,122 @@ const nav = [
 
     .mobile-menu {
       display: flex;
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 0;
+      order: 3;
+      z-index: 2;
+      height: 40px;
+      align-items: center;
     }
 
     .mobile-menu summary {
       display: flex !important;
     }
 
-    .brand-name {
-      font-size: 20px;
-      letter-spacing: 0.04em;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: inline-block;
-      transform: translateY(1px);
+    .brand {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: calc(100% - 120px);
+      z-index: 1;
     }
 
-    .nav-social {
-      --social-size: 18px;
-      --social-icon-size: 9px;
+    .brand-name {
+      font-size: 24px;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      transform: none;
+    }
+
+    :global(.nav-social) {
+      display: none !important;
+    }
+
+    :global(.mobile-menu-social) {
+      margin-top: 8px;
+      width: auto;
+      display: flex;
+      justify-content: center;
+      justify-self: center;
+      --social-size: 22px;
+      --social-color: #ffffff;
+      --social-hover-color: #ffffff;
     }
 
     .mobile-menu summary {
-      transform: translateY(1px);
+      width: 40px;
+      height: 40px;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-nav {
+      transition: none;
+    }
+
+    .mobile-submenu-links {
+      transition: none;
+    }
+
+    .mobile-nav-trigger::after {
+      transition: none;
     }
   }
 </style>
+
+<script>
+  const mobileMenu = document.querySelector(".mobile-menu");
+  const mobileMenuSummary = mobileMenu?.querySelector("summary");
+  const mobileSubmenu = document.querySelector(".mobile-submenu");
+  const mobileTrigger = document.querySelector(".mobile-nav-trigger");
+
+  if (mobileMenu && mobileMenuSummary) {
+    mobileMenuSummary.addEventListener("click", (event) => {
+      if (mobileMenu.open && !mobileMenu.classList.contains("is-closing")) {
+        event.preventDefault();
+        mobileMenu.classList.add("is-closing");
+
+        window.setTimeout(() => {
+          mobileMenu.classList.remove("is-closing");
+          mobileMenu.open = false;
+        }, 250);
+      }
+    });
+  }
+
+  if (mobileSubmenu && mobileTrigger) {
+    mobileTrigger.addEventListener("click", () => {
+      const isOpen = mobileSubmenu.classList.toggle("is-open");
+      mobileTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+  }
+
+  if (mobileMenu && mobileSubmenu && mobileTrigger) {
+    mobileMenu.addEventListener("toggle", () => {
+      if (!mobileMenu.open) {
+        mobileMenu.classList.remove("is-closing");
+        mobileSubmenu.classList.remove("is-open");
+        mobileTrigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  const mobileNavAboutLink = document.querySelector('.mobile-nav a[href="/#about-contact"]');
+  if (mobileMenu && mobileNavAboutLink) {
+    mobileNavAboutLink.addEventListener("click", () => {
+      mobileMenu.open = false;
+    });
+  }
+</script>

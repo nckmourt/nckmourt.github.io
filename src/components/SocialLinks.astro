@@ -1,6 +1,7 @@
 ---
 const {
   className = "",
+  iconSet = "default",
 } = Astro.props;
 
 const social = {
@@ -11,23 +12,41 @@ const social = {
 ---
 <div class:list={["social-links", className]} aria-label="Social links">
   <a class="social-link" href={social.email} aria-label="Email">
-    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-      <rect x="3.5" y="6" width="17" height="12" rx="2"></rect>
-      <path d="M4 7l8 6 8-6"></path>
-    </svg>
+    {iconSet === "navWhite" ? (
+      <img src="/icons/mail-logo-white.svg" alt="" loading="lazy" decoding="async" />
+    ) : iconSet === "aboutGray" ? (
+      <img src="/icons/mail-logo-gray.svg" alt="" loading="lazy" decoding="async" />
+    ) : (
+      <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+        <rect x="3.5" y="6" width="17" height="12" rx="2"></rect>
+        <path d="M4 7l8 6 8-6"></path>
+      </svg>
+    )}
   </a>
   <a class="social-link" href={social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-      <rect x="3" y="3" width="18" height="18" rx="4"></rect>
-      <path d="M8 10v7"></path>
-      <circle cx="8" cy="7.5" r="1"></circle>
-      <path d="M12 17v-4c0-1.6 1.1-2.7 2.5-2.7S17 11.4 17 13v4"></path>
-    </svg>
+    {iconSet === "navWhite" ? (
+      <img src="/icons/linkedin-logo-white.svg" alt="" loading="lazy" decoding="async" />
+    ) : iconSet === "aboutGray" ? (
+      <img src="/icons/linkedin-logo-gray.svg" alt="" loading="lazy" decoding="async" />
+    ) : (
+      <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+        <path d="M8 10v7"></path>
+        <circle cx="8" cy="7.5" r="1"></circle>
+        <path d="M12 17v-4c0-1.6 1.1-2.7 2.5-2.7S17 11.4 17 13v4"></path>
+      </svg>
+    )}
   </a>
   <a class="social-link" href={social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-    <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-      <path d="M12 3.2a8.8 8.8 0 0 0-2.8 17.1c.4.1.6-.2.6-.5v-1.7c-2.4.5-2.9-1-2.9-1-.4-1-.9-1.3-.9-1.3-.8-.5.1-.5.1-.5.9.1 1.3.9 1.3.9.8 1.3 2 .9 2.5.7.1-.6.3-.9.5-1.2-1.9-.2-3.9-1-3.9-4.2 0-.9.3-1.7.9-2.2-.1-.2-.4-1.1.1-2.2 0 0 .7-.2 2.3.9a8.4 8.4 0 0 1 4.2 0c1.6-1.1 2.3-.9 2.3-.9.5 1.1.2 2 .1 2.2.6.6.9 1.4.9 2.2 0 3.3-2 4-3.9 4.2.3.3.6.8.6 1.6v2.4c0 .3.2.6.6.5A8.8 8.8 0 0 0 12 3.2"></path>
-    </svg>
+    {iconSet === "navWhite" ? (
+      <img src="/icons/github-logo-white.svg" alt="" loading="lazy" decoding="async" />
+    ) : iconSet === "aboutGray" ? (
+      <img src="/icons/github-logo-gray.svg" alt="" loading="lazy" decoding="async" />
+    ) : (
+      <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+        <path d="M12 3.2a8.8 8.8 0 0 0-2.8 17.1c.4.1.6-.2.6-.5v-1.7c-2.4.5-2.9-1-2.9-1-.4-1-.9-1.3-.9-1.3-.8-.5.1-.5.1-.5.9.1 1.3.9 1.3.9.8 1.3 2 .9 2.5.7.1-.6.3-.9.5-1.2-1.9-.2-3.9-1-3.9-4.2 0-.9.3-1.7.9-2.2-.1-.2-.4-1.1.1-2.2 0 0 .7-.2 2.3.9a8.4 8.4 0 0 1 4.2 0c1.6-1.1 2.3-.9 2.3-.9.5 1.1.2 2 .1 2.2.6.6.9 1.4.9 2.2 0 3.3-2 4-3.9 4.2.3.3.6.8.6 1.6v2.4c0 .3.2.6.6.5A8.8 8.8 0 0 0 12 3.2"></path>
+      </svg>
+    )}
   </a>
 </div>
 
@@ -64,6 +83,14 @@ const social = {
     stroke-linejoin: round;
     display: block;
     flex: 0 0 auto;
+  }
+
+  .social-link img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    flex: 0 0 auto;
+    object-fit: contain;
   }
 
   .social-link:hover {
