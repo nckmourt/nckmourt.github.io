@@ -23,8 +23,10 @@ const {
         --accent:#ffffff;
         --link:#dbe6ff;
         --hero-blue: #0F1C3F;
-        --max:1200px;
+        --max:1080px;
+        --page-gutter: clamp(18px, 4vw, 56px);
         --nav-height: 64px;
+        --divider-width: min(760px, calc(100% - (var(--page-gutter) * 2)));
 
         /* Header specific variables */
         --header-bg: #171b21;
@@ -70,7 +72,7 @@ const {
       .container {
         max-width: var(--max);
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 var(--page-gutter);
       }
 
       .btn{
@@ -97,5 +99,40 @@ const {
       </main>
       <slot name="footer" />
     </div>
+    <script>
+      const bodyEl = document.body;
+      const htmlEl = document.documentElement;
+      const headerEl = document.querySelector(".site-header");
+      const brandNameEl = document.querySelector(".site-header .brand-name");
+      const heroEl = document.querySelector(".hero-home");
+      const heroImages = () => document.querySelectorAll(".hero-home .carousel-slide img");
+      let scrollTicking = false;
+      const scrollThreshold = 50;
+
+      const updateScrolledState = () => {
+        const isScrolled = window.scrollY > scrollThreshold;
+        bodyEl.classList.toggle("has-scrolled", isScrolled);
+        htmlEl.classList.toggle("has-scrolled", isScrolled);
+        headerEl?.classList.toggle("is-compact", isScrolled);
+        heroEl?.classList.toggle("is-scrolled", isScrolled);
+
+        if (headerEl) headerEl.style.height = isScrolled ? "44px" : "";
+        if (brandNameEl) brandNameEl.style.fontSize = isScrolled ? "18px" : "";
+        heroImages().forEach((img) => {
+          img.style.transform = isScrolled ? "scale(1.1)" : "scale(1)";
+        });
+
+        scrollTicking = false;
+      };
+
+      const onScroll = () => {
+        if (scrollTicking) return;
+        scrollTicking = true;
+        window.requestAnimationFrame(updateScrolledState);
+      };
+
+      updateScrolledState();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    </script>
   </body>
 </html>

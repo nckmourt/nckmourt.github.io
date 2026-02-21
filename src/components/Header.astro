@@ -3,7 +3,7 @@ import SocialLinks from "./SocialLinks.astro";
 
 const navMain = [
   { href: "/", label: "Home" },
-  { href: "/photo/", label: "Photo" },
+  { href: "/photos/", label: "Photos" },
   { href: "/#about-contact", label: "About" },
 ];
 
@@ -72,11 +72,22 @@ const graphicsDropdown = [
     width: 100%;
     height: var(--nav-height);
     background: var(--header-bg);
-    border-bottom: 2px solid var(--header-border); /* Solid border uses variable */
     display: block;
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: height 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .site-header::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: var(--divider-width);
+    border-bottom: 1px solid var(--header-border);
+    pointer-events: none;
   }
 
   .header-inner {
@@ -84,7 +95,7 @@ const graphicsDropdown = [
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 40px;
+    padding: 0 var(--page-gutter);
     max-width: 100%;
   }
 
@@ -109,6 +120,7 @@ const graphicsDropdown = [
     color: var(--header-text);
     text-transform: uppercase;
     white-space: nowrap;
+    transition: font-size 260ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .site-nav {
@@ -207,6 +219,14 @@ const graphicsDropdown = [
     letter-spacing: 0.05em;
     transition: color 0.2s ease;
   }
+
+  :global(header.site-header.is-compact) {
+    height: 44px !important;
+  }
+
+  :global(header.site-header.is-compact .brand-name) {
+    font-size: 18px !important;
+  }
   
   .nav-link:hover {
     color: var(--link);
@@ -265,7 +285,7 @@ const graphicsDropdown = [
     background: #171b21;
     border: 2px solid #2b3342;
     border-radius: 24px;
-    padding: 20px 12px 14px;
+    padding: 20px 18px 14px 12px;
     display: grid;
     gap: 14px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
@@ -295,7 +315,7 @@ const graphicsDropdown = [
     text-transform: uppercase;
     color: var(--header-text);
     text-decoration: none;
-    padding: 4px 8px;
+    padding: 4px 14px 4px 8px;
     border-radius: 8px;
     line-height: 1;
     text-align: left;
@@ -452,9 +472,25 @@ const graphicsDropdown = [
       height: 40px;
       transform: none;
     }
+
+    :global(header.site-header.is-compact) {
+      height: 44px !important;
+    }
+
+    :global(header.site-header.is-compact .brand-name) {
+      font-size: 18px !important;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      transition: none;
+    }
+
+    .brand-name {
+      transition: none;
+    }
+
     .mobile-nav {
       transition: none;
     }

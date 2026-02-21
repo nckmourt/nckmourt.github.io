@@ -223,7 +223,18 @@ const loopSlides = [
     min-height: 360px;
     position: relative;
     overflow: hidden;
+  }
+
+  .carousel-frame::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: var(--divider-width);
     border-bottom: 1px solid #202630;
+    pointer-events: none;
+    z-index: 7;
   }
 
   .carousel-track {
@@ -245,6 +256,12 @@ const loopSlides = [
     height: 100%;
     object-fit: cover;
     display: block;
+    transform: scale(1);
+    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  :global(.hero-home.is-scrolled .carousel-slide img) {
+    transform: scale(1.1) !important;
   }
 
   .slide-placeholder {
@@ -307,7 +324,8 @@ const loopSlides = [
   }
 
   .hero-name {
-    margin: 0 0 12px;
+    margin: 0 auto 12px;
+    width: min(100%, 980px);
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
     font-size: clamp(2.2rem, 5vw, 3.6rem);
@@ -318,8 +336,10 @@ const loopSlides = [
   }
 
   .hero-bio {
-    margin: 0;
-    max-width: 72ch;
+    margin: 0 auto;
+    width: min(100%, 980px);
+    max-width: none;
+    text-align: left;
     font-family: "Inter", sans-serif;
     font-size: 16px;
     line-height: 1.65;
@@ -357,6 +377,12 @@ const loopSlides = [
     .hero-bio {
       font-size: 15px;
       line-height: 1.6;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-slide img {
+      transition: none;
     }
   }
 </style>

@@ -17,9 +17,11 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
 
   <section class="section">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Visual Journalism</h2>
-        <a href="/graphics/" class="view-all">View all work &rarr;</a>
+      <div class="featured-intro">
+        <h2 class="featured-title">Featured Work</h2>
+        <p class="featured-statement">
+          A selection of recent graphics and data journalism projects, from fast-turn vote trackers to deeply reported explainers.
+        </p>
       </div>
       
       <div class="project-grid">
@@ -68,12 +70,12 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
 
 <style>
   :global(body) {
-    background: 111111#;
+    background: #111111;
     color: #f3f6fb;
   }
 
   .section {
-    padding: 80px 0;
+    padding: 0 0 80px;
     background: #111111;
     color: #f3f6fb;
     --accent: #f4f7fc;
@@ -82,32 +84,33 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     --link: #f4f7fc;
   }
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 40px;
-    border-bottom: 1px solid #2a3140;
-    padding-bottom: 10px;
-  }
-
-  .section-title {
-    font-family: 'Merriweather', serif;
-    font-size: 2rem;
-    color: var(--accent);
+  .featured-intro {
     margin: 0;
+    padding-top: clamp(24px, 5vw, 52px);
+    padding-bottom: clamp(24px, 4vw, 40px);
   }
 
-  .view-all {
-    font-family: 'Inter', sans-serif;
+  .featured-title {
+    margin: 0 auto 12px;
+    width: min(100%, 980px);
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #ffffff;
+    line-height: 0.95;
+  }
+
+  .featured-statement {
+    margin: 0 auto;
+    width: min(100%, 980px);
+    max-width: none;
+    text-align: left;
+    font-family: "Inter", sans-serif;
     font-size: 16px;
-    font-weight: 500;
-    color: #f4f7fc;
-  }
-
-  .view-all:hover {
-    color: #dbe6ff;
-    text-decoration: none;
+    line-height: 1.65;
+    color: rgba(232, 237, 244, 0.92);
   }
 
   .project-grid {
@@ -117,10 +120,21 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
   }
 
   .about-section {
+    position: relative;
     background: #111111;
-    border-top: 1px solid #232b3a;
     padding: 54px 0 70px;
     color: #f3f6fb;
+  }
+
+  .about-section::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: var(--divider-width);
+    border-top: 1px solid #232b3a;
+    pointer-events: none;
   }
 
   .about-wrap {
@@ -210,7 +224,6 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
 
   :global(.site-footer) {
     background: #111111;
-    border-top: 1px solid #232b3a;
   }
 
   :global(.site-footer .footer-text) {
