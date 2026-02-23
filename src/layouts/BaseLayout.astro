@@ -11,7 +11,8 @@ const {
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
-    <link rel="icon" href="/favicon.png?v=3" type="image/png" />
+    <link id="site-favicon" rel="icon" href="/favicon-dark.png?v=5" type="image/png" />
+    <link id="site-touch-icon" rel="apple-touch-icon" href="/favicon-dark.png?v=5" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
@@ -100,6 +101,26 @@ const {
       <slot name="footer" />
     </div>
     <script>
+      const faviconQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const faviconEl = document.getElementById("site-favicon");
+      const touchIconEl = document.getElementById("site-touch-icon");
+      const faviconVersion = "v=5";
+
+      const applyThemeFavicon = () => {
+        const href = faviconQuery.matches
+          ? `/favicon-dark.png?${faviconVersion}`
+          : `/favicon-light.png?${faviconVersion}`;
+        if (faviconEl) faviconEl.setAttribute("href", href);
+        if (touchIconEl) touchIconEl.setAttribute("href", href);
+      };
+
+      applyThemeFavicon();
+      if (typeof faviconQuery.addEventListener === "function") {
+        faviconQuery.addEventListener("change", applyThemeFavicon);
+      } else if (typeof faviconQuery.addListener === "function") {
+        faviconQuery.addListener(applyThemeFavicon);
+      }
+
       const bodyEl = document.body;
       const htmlEl = document.documentElement;
       const headerEl = document.querySelector(".site-header");
