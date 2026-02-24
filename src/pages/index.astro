@@ -51,6 +51,9 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
             complex systems clear. He works from raw datasets to finished graphics, often under breaking news
             deadlines, and builds reusable tools that strengthen newsroom coverage over time.
           </p>
+          <p>
+            <a class="btn resume-link" href="/resume.pdf" target="_blank" rel="noopener noreferrer">View Resume</a>
+          </p>
           <SocialLinks className="about-social" iconSet="navWhite" />
         </div>
         <div class="about-photo-frame">
@@ -184,6 +187,16 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     --social-hover-bg: #253246;
     --social-hover-border: #4f617f;
     --social-hover-color: #ffffff;
+  }
+
+  .resume-link {
+    border-color: #4f617f;
+    background: #1c2431;
+  }
+
+  .resume-link:hover {
+    background: #253246;
+    border-color: #5f7395;
   }
 
   .about-photo-frame {
