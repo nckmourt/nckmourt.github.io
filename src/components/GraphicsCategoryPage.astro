@@ -1,0 +1,290 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import ImageCarousel from "./ImageCarousel.astro";
+
+const {
+  pageTitle = "Graphics",
+  pageDescription = "Selected work and case studies.",
+  projects = [],
+  emptyState = "No projects found yet.",
+} = Astro.props;
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+function formatDisplayDate(dateText) {
+  const parsed = new Date(dateText);
+  return Number.isNaN(parsed.getTime()) ? dateText : dateFormatter.format(parsed);
+}
+
+const carouselSlides = projects
+  .filter((project) => project.data.heroImage)
+  .slice(0, 4)
+  .map((project) => ({
+    src: project.data.heroImage,
+    alt: project.data.title,
+    title: project.data.title,
+    href: project.data.externalUrl || `/projects/${project.slug}/`,
+  }));
+---
+<BaseLayout title={`${pageTitle} | Nick Mourtoupalas`} description={pageDescription}>
+  <Fragment slot="header"><Header /></Fragment>
+
+  <section class="panel graphics-heading-panel">
+    <div class="graphics-heading content-frame">
+      <h1 class="graphics-title">{pageTitle}</h1>
+    </div>
+  </section>
+
+  <ImageCarousel
+    headline={pageTitle}    ctaLabel="Read more"
+    ctaHref="#all-projects"
+    slides={carouselSlides}
+  />
+
+  <section id="all-projects" class="panel" style="margin-top:18px;">
+    {projects.length > 0 ? (
+      <div class="feature-list content-frame">
+        {projects.map((p, index) => {
+          const href = p.data.externalUrl || `/projects/${p.slug}/`;
+          const target = p.data.externalUrl ? "_blank" : "_self";
+          return (
+            <a
+              class={`feature-row ${index % 2 ? "is-reversed" : ""}`}
+              href={href}
+              target={target}
+              rel={p.data.externalUrl ? "noopener noreferrer" : ""}
+              aria-label={p.data.title}
+            >
+              <div class="feature-media">
+                {p.data.heroImage ? (
+                  <img
+                    class="feature-image"
+                    src={p.data.heroImage}
+                    alt={p.data.title}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="feature-image feature-placeholder">{p.data.title}</div>
+                )}
+              </div>
+
+            <div class="feature-card">
+              <div class="feature-meta">{formatDisplayDate(p.data.date)}</div>
+              <h3 class="feature-title">{p.data.title}</h3>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M14 4h6v6" />
+                    <path d="M20 4 11 13" />
+                    <path d="M20 13v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h3" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    ) : (
+      <div class="content-frame">
+        <p class="empty-state">{emptyState}</p>
+      </div>
+    )}
+  </section>
+
+  <Fragment slot="footer"><Footer /></Fragment>
+</BaseLayout>
+
+<style>
+  :global(body),
+  :global(main) {
+    background: #111111;
+  }
+
+  .panel .h1,
+  .panel .h2 {
+    color: #ffffff;
+  }
+
+  .graphics-heading {
+    margin: 0;
+    padding-left: 2px;
+  }
+
+  .graphics-title {
+    margin: 0;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 0.85;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-size: 7.5rem;
+    text-align: left;
+  }
+
+  .graphics-heading-panel {
+    margin-top: 44px;
+    margin-bottom: 26px;
+  }
+
+  .content-frame {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: clamp(22px, 6vw, 80px);
+  }
+
+  .feature-list {
+    display: grid;
+    gap: 56px;
+    margin-inline: auto;
+    margin-top: 0;
+  }
+
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .feature-media {
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid #2a2d33;
+    background: #11141a;
+    aspect-ratio: 200 / 133;
+  }
+
+  .feature-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+
+  .feature-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 30px;
+    font-family: "Merriweather", serif;
+    font-size: 1.3rem;
+    color: #555;
+    background: linear-gradient(135deg, #ececec 0%, #dbdbdb 100%);
+    text-align: center;
+  }
+
+  .feature-card {
+    position: relative;
+    background: #171b21;
+    border: 1px solid #2d323a;
+    color: #f2f4f7;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    padding: 16px 18px 18px;
+    max-width: 560px;
+  }
+
+  .feature-meta {
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    color: #a6adb9;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+  }
+
+  .feature-title {
+    font-size: clamp(1.5rem, 3vw, 2.15rem);
+    line-height: 1.12;
+    margin: 0 26px 10px 0;
+    color: #ffffff;
+    font-family: "Baskervville", "Baskervville Variable", Georgia, "Times New Roman", serif;
+    transition: color 0.2s ease;
+  }
+
+  .feature-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    line-height: 0;
+    color: #a6adb9;
+  }
+
+  .feature-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: #a6adb9;
+    stroke-width: 2.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feature-row:hover {
+    text-decoration: none;
+  }
+
+  .feature-row:hover .feature-image {
+    transform: scale(1.05);
+    filter: brightness(0.9);
+  }
+
+  .feature-row:hover .feature-title {
+    color: var(--link);
+  }
+
+  .empty-state {
+    color: #d4d9e2;
+    font-family: "Inter", sans-serif;
+  }
+
+  @media (min-width: 980px) {
+    .feature-list {
+      gap: 86px;
+    }
+
+    .feature-row {
+      grid-template-columns: minmax(0, 50%) minmax(0, 50%);
+      align-items: center;
+      gap: 0;
+    }
+
+    .feature-row .feature-media {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .feature-row .feature-card {
+      grid-column: 1;
+      grid-row: 1;
+      z-index: 2;
+      margin-right: -60px;
+      max-width: 620px;
+    }
+
+    .feature-row.is-reversed .feature-media {
+      grid-column: 1;
+    }
+
+    .feature-row.is-reversed .feature-card {
+      grid-column: 2;
+      margin-right: 0;
+      margin-left: -60px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .graphics-title {
+      font-size: 3.5rem;
+    }
+
+    .projects-title {
+      font-size: 1.75rem;
+    }
+  }
+</style>

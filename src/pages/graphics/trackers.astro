@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import GraphicsCategoryPage from "../../components/GraphicsCategoryPage.astro";
+
+const projects = await getCollection("projects");
+
+const trackersProjects = projects
+  .filter((project) => project.data.tags.includes("trackers"))
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+---
+<GraphicsCategoryPage
+  pageTitle="Trackers"
+  pageDescription="Tracking graphics and live data projects."
+  projects={trackersProjects}
+  emptyState="No tracker projects found yet."
+/>

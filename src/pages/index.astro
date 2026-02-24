@@ -3,17 +3,66 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Hero from "../components/Hero.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
-const featured = projects.filter(p => p.data.featured).slice(0, 6);
+const allProjects = [...projects].sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+const homeStoryLinks = [
+  "https://wapo.st/4lK1zjz",
+  "https://wapo.st/3WjjAKt",
+  "https://wapo.st/3XAaHMz",
+  "https://wapo.st/3OssBQh",
+  "https://wapo.st/4lRmktN",
+];
+const curatedHomeStories = homeStoryLinks
+  .map((url) => projects.find((p) => p.data.externalUrl === url))
+  .filter(Boolean)
+  .filter((p) => p.data.heroImage);
+const homeStories = (curatedHomeStories.length === 5
+  ? curatedHomeStories
+  : allProjects.filter((p) => p.data.heroImage).slice(0, 5));
+const graphicsCarouselLinks = [
+  "https://wapo.st/4lK1zjz",
+  "https://wapo.st/3WjjAKt",
+  "https://wapo.st/3XAaHMz",
+  "https://wapo.st/3OssBQh",
+];
+const graphicsCarouselProjects = graphicsCarouselLinks
+  .map((url) => projects.find((p) => p.data.externalUrl === url))
+  .filter(Boolean)
+  .filter((p) => p.data.heroImage)
+  .slice(0, 4);
+
+const homeCarouselSource = graphicsCarouselProjects.length === 4
+  ? graphicsCarouselProjects
+  : [...projects]
+      .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
+      .filter((p) => p.data.heroImage)
+      .slice(0, 4);
+
+const homeCarouselSlides = homeCarouselSource.map((p) => ({
+  src: p.data.heroImage,
+  alt: p.data.title,
+  title: p.data.title,
+  href: p.data.externalUrl || `/projects/${p.slug}/`,
+}));
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+function formatDisplayDate(dateText) {
+  const parsed = new Date(dateText);
+  return Number.isNaN(parsed.getTime()) ? dateText : dateFormatter.format(parsed);
+}
 ---
 <BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio of graphics journalism and data visualization.">
   <Fragment slot="header"><Header /></Fragment>
   
-  <Hero />
+  <Hero slides={homeCarouselSlides} />
 
   <section class="section">
     <div class="container">
@@ -23,11 +72,46 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
           A selection of recent graphics and data journalism projects, from fast-turn vote trackers to deeply reported explainers.
         </p>
       </div>
-      
-      <div class="project-grid">
-        {featured.map((p) => (
-          <ProjectCard project={p} />
-        ))}
+
+      <div class="feature-list">
+        {homeStories.map((p, index) => {
+          const href = p.data.externalUrl || `/projects/${p.slug}/`;
+          const target = p.data.externalUrl ? "_blank" : "_self";
+          return (
+            <a
+              class={`feature-row ${index % 2 ? "is-reversed" : ""}`}
+              href={href}
+              target={target}
+              rel={p.data.externalUrl ? "noopener noreferrer" : ""}
+              aria-label={p.data.title}
+            >
+              <div class="feature-media">
+                {p.data.heroImage ? (
+                  <img
+                    class="feature-image"
+                    src={p.data.heroImage}
+                    alt={p.data.title}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="feature-image feature-placeholder">{p.data.title}</div>
+                )}
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-meta">{formatDisplayDate(p.data.date)}</div>
+                <h3 class="feature-headline">{p.data.title}</h3>
+                <span class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                    <path d="M14 4h6v6" />
+                    <path d="M20 4 11 13" />
+                    <path d="M20 13v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h3" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          );
+        })}
       </div>
     </div>
   </section>
@@ -116,10 +200,104 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     color: rgba(232, 237, 244, 0.92);
   }
 
-  .project-grid {
+  .feature-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 40px;
+    gap: 88px;
+    margin-inline: auto;
+    margin-top: 0;
+  }
+
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .feature-media {
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid #2a2d33;
+    background: #11141a;
+    aspect-ratio: 16 / 9;
+  }
+
+  .feature-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+
+  .feature-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 30px;
+    font-family: "Merriweather", serif;
+    font-size: 1.3rem;
+    color: #555;
+    background: linear-gradient(135deg, #ececec 0%, #dbdbdb 100%);
+    text-align: center;
+  }
+
+  .feature-card {
+    position: relative;
+    background: #111827;
+    border: 1px solid #273246;
+    color: #f2f4f7;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    padding: 20px 22px 20px;
+    max-width: 760px;
+  }
+
+  .feature-meta {
+    font-size: 13px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    color: #a6adb9;
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+  }
+
+  .feature-headline {
+    font-size: clamp(1.5rem, 3vw, 2.15rem);
+    line-height: 0.95;
+    margin: 0 30px 16px 0;
+    color: #ffffff;
+    font-family: "Baskervville", "Baskervville Variable", Georgia, "Times New Roman", serif;
+    transition: color 0.2s ease;
+  }
+
+  .feature-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    line-height: 0;
+    color: #a6adb9;
+  }
+
+  .feature-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: #a6adb9;
+    stroke-width: 2.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feature-row:hover {
+    text-decoration: none;
+  }
+
+  .feature-row:hover .feature-image {
+    transform: scale(1.05);
+    filter: brightness(0.9);
+  }
+
+  .feature-row:hover .feature-headline {
+    color: var(--link);
   }
 
   .about-section {
@@ -217,24 +395,6 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     object-fit: cover;
   }
 
-  :global(.section .project-card .meta) {
-    color: #aeb8cb;
-  }
-
-  :global(.section .project-card .title) {
-    color: #ffffff;
-  }
-
-  :global(.section .project-card .description) {
-    color: #e1e7f2;
-    opacity: 1;
-  }
-
-  :global(.section .project-card .thumb-container) {
-    background: #0d131d;
-    border-color: #2a3446;
-  }
-
   :global(.site-footer) {
     background: #111111;
   }
@@ -243,10 +403,47 @@ const featured = projects.filter(p => p.data.featured).slice(0, 6);
     color: #ffffff;
   }
 
-  @media (max-width: 600px) {
-    .project-grid {
-      grid-template-columns: 1fr;
+  @media (min-width: 980px) {
+    .feature-list {
+      gap: 118px;
     }
+
+    .feature-row {
+      grid-template-columns: minmax(0, 50%) minmax(0, 50%);
+      align-items: center;
+      gap: 0;
+    }
+
+    .feature-row .feature-media {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .feature-row .feature-card {
+      grid-column: 1;
+      grid-row: 1;
+      z-index: 2;
+      margin-right: -116px;
+      max-width: 760px;
+    }
+
+    .feature-row.is-reversed .feature-media {
+      grid-column: 1;
+    }
+
+    .feature-row.is-reversed .feature-card {
+      grid-column: 2;
+      margin-right: 0;
+      margin-left: -116px;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .feature-headline {
+      font-size: clamp(1.5rem, 3vw, 2.15rem);
+      line-height: 1.02;
+    }
+
   }
 
   @media (max-width: 900px) {

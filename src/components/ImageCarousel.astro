@@ -1,0 +1,445 @@
+---
+const {
+  headline = "",
+  eyebrow = "",
+  ctaLabel = "",
+  ctaHref = "",
+  marginTop = "18px",
+  slides = [],
+} = Astro.props;
+
+const defaultSlides = [
+  { src: "/slides/1.jpg", alt: "Featured slide 1", title: "Featured Project", href: "#" },
+  { src: "/slides/2.jpg", alt: "Featured slide 2", title: "Featured Project", href: "#" },
+  { src: "/slides/3.jpg", alt: "Featured slide 3", title: "Featured Project", href: "#" },
+  { src: "/slides/1.jpg", alt: "Featured slide 1", title: "Featured Project", href: "#" },
+];
+
+const normalizedSlides = slides
+  .filter((slide) => slide?.src)
+  .slice(0, 4)
+  .map((slide, index) => ({
+    src: slide.src,
+    alt: slide.alt || `Featured slide ${index + 1}`,
+    title: slide.title || slide.alt || headline || `Featured slide ${index + 1}`,
+    href: slide.href || ctaHref || "#",
+  }));
+
+const displaySlides = normalizedSlides.length > 0 ? normalizedSlides : defaultSlides;
+const loopSlides = [displaySlides[displaySlides.length - 1], ...displaySlides, displaySlides[0]];
+const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
+const initialTitle = displaySlides[0]?.title || headline || "Featured Work";
+const initialHref = displaySlides[0]?.href || ctaHref || "#";
+---
+<section
+  class="image-carousel"
+  id={carouselId}
+  aria-label="Featured image carousel"
+  style={`--carousel-top-margin:${marginTop};`}
+>
+  <div class="carousel-frame">
+    <div class="carousel-track">
+      {loopSlides.map((slide) => (
+        <div class="carousel-slide">
+          <img src={slide.src} alt={slide.alt} loading="lazy" />
+        </div>
+      ))}
+    </div>
+    <div class={`carousel-headline ${headline || eyebrow ? "" : "is-empty"}`}>
+      {eyebrow && <p class="carousel-eyebrow">{eyebrow}</p>}
+      <h2 class="carousel-title" data-carousel-title>{initialTitle}</h2>
+      {ctaLabel && (
+        <a class="carousel-cta" href={initialHref} data-carousel-cta>
+          {ctaLabel}
+        </a>
+      )}
+    </div>
+    <div class="carousel-controls" aria-label="Carousel slide controls">
+      {displaySlides.map((_, index) => (
+        <button
+          class={`carousel-dot ${index === 0 ? "is-active" : ""}`}
+          type="button"
+          aria-label={`Go to slide ${index + 1}`}
+          data-slide-index={index}
+        ></button>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script define:vars={{
+  carouselId,
+  slideTitles: displaySlides.map((slide) => slide.title),
+  slideHrefs: displaySlides.map((slide) => slide.href || ctaHref || "#"),
+}}>
+  const root = document.getElementById(carouselId);
+  const carouselFrame = root?.querySelector(".carousel-frame");
+  const carouselTrack = root?.querySelector(".carousel-track");
+  const carouselDots = root?.querySelectorAll(".carousel-dot") ?? [];
+  const titleEl = root?.querySelector("[data-carousel-title]");
+  const ctaEl = root?.querySelector("[data-carousel-cta]");
+  const totalSlides = carouselDots.length;
+  let currentOffset = 1;
+  const intervalTime = 4200;
+  let autoplayTimer;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let suppressClickUntil = 0;
+  let isDragging = false;
+  let startTranslateX = 0;
+  let dragDeltaX = 0;
+
+  function slideWidth() {
+    return carouselFrame?.clientWidth || 1;
+  }
+
+  function getLogicalIndex() {
+    let logical = currentOffset - 1;
+    if (logical < 0) logical = totalSlides - 1;
+    if (logical >= totalSlides) logical = 0;
+    return logical;
+  }
+
+  function updateDots() {
+    const logical = getLogicalIndex();
+    carouselDots.forEach((dot, idx) => {
+      dot.classList.toggle("is-active", idx === logical);
+    });
+    if (titleEl && slideTitles[logical]) {
+      titleEl.textContent = slideTitles[logical];
+    }
+    if (ctaEl && slideHrefs[logical]) {
+      ctaEl.setAttribute("href", slideHrefs[logical]);
+    }
+  }
+
+  function setTrackTransform(valuePx, withTransition) {
+    if (!carouselTrack) return;
+    carouselTrack.style.transition = withTransition ? "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+    carouselTrack.style.transform = `translate3d(${valuePx}px, 0, 0)`;
+  }
+
+  function snapToOffset(withTransition = true) {
+    const x = -(currentOffset * slideWidth());
+    setTrackTransform(x, withTransition);
+    updateDots();
+  }
+
+  function goToLogicalIndex(index) {
+    currentOffset = index + 1;
+    snapToOffset(true);
+  }
+
+  function advanceSlide() {
+    if (totalSlides <= 1) return;
+    currentOffset += 1;
+    snapToOffset(true);
+  }
+
+  function previousSlide() {
+    if (totalSlides <= 1) return;
+    currentOffset -= 1;
+    snapToOffset(true);
+  }
+
+  function scheduleNextAdvance() {
+    clearTimeout(autoplayTimer);
+    autoplayTimer = setTimeout(() => {
+      advanceSlide();
+      scheduleNextAdvance();
+    }, intervalTime);
+  }
+
+  if (totalSlides > 0 && carouselFrame && carouselTrack) {
+    snapToOffset(false);
+
+    carouselTrack.addEventListener("transitionend", () => {
+      if (currentOffset === 0) {
+        currentOffset = totalSlides;
+        snapToOffset(false);
+      } else if (currentOffset === totalSlides + 1) {
+        currentOffset = 1;
+        snapToOffset(false);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (!isDragging) snapToOffset(false);
+    });
+
+    carouselFrame.addEventListener(
+      "touchstart",
+      (event) => {
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        isDragging = true;
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        dragDeltaX = 0;
+        startTranslateX = -(currentOffset * slideWidth());
+        setTrackTransform(startTranslateX, false);
+      },
+      { passive: true },
+    );
+
+    carouselFrame.addEventListener(
+      "touchmove",
+      (event) => {
+        if (!isDragging) return;
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        dragDeltaX = touch.clientX - touchStartX;
+        setTrackTransform(startTranslateX + dragDeltaX, false);
+      },
+      { passive: true },
+    );
+
+    carouselFrame.addEventListener(
+      "touchend",
+      (event) => {
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+        const swipeThreshold = Math.min(80, slideWidth() * 0.14);
+
+        if (absX > swipeThreshold && absX > absY) {
+          if (deltaX < 0) {
+            advanceSlide();
+          } else {
+            previousSlide();
+          }
+          suppressClickUntil = Date.now() + 350;
+        } else {
+          snapToOffset(true);
+        }
+        isDragging = false;
+        scheduleNextAdvance();
+      },
+      { passive: true },
+    );
+
+    carouselFrame.addEventListener("click", (event) => {
+      if (Date.now() < suppressClickUntil) return;
+      if (isDragging) return;
+
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest(".carousel-controls")) return;
+
+      const rect = carouselFrame.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+
+      if (clickX < rect.width / 2) {
+        previousSlide();
+      } else {
+        advanceSlide();
+      }
+      scheduleNextAdvance();
+    });
+
+    carouselDots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        const index = Number(dot.getAttribute("data-slide-index"));
+        if (!Number.isNaN(index)) {
+          goToLogicalIndex(index);
+          scheduleNextAdvance();
+        }
+      });
+    });
+
+    scheduleNextAdvance();
+  }
+</script>
+
+<style>
+  .image-carousel {
+    width: 100%;
+    background: #111111;
+    margin-top: var(--carousel-top-margin);
+  }
+
+  .carousel-frame {
+    width: 100%;
+    height: min(66vh, 760px);
+    min-height: 360px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .carousel-frame::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: var(--divider-width);
+    border-bottom: 1px solid #202630;
+    pointer-events: none;
+    z-index: 7;
+  }
+
+  .carousel-headline {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 8;
+    width: min(92vw, 980px);
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 26px;
+    padding: 0 12px;
+  }
+
+  .carousel-headline.is-empty {
+    min-height: 56px;
+  }
+
+  .carousel-eyebrow {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(236, 241, 250, 0.92);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+  }
+
+  .carousel-title {
+    margin: 0;
+    font-family: "Baskervville", "Baskervville Variable", Georgia, "Times New Roman", serif;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.01em;
+    line-height: 1.02;
+    color: #ffffff;
+    font-size: clamp(1.5rem, 3.2vw, 2.6rem);
+    text-shadow: 0 4px 22px rgba(0, 0, 0, 0.9);
+  }
+
+  .carousel-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 176px;
+    height: 42px;
+    padding: 0 22px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 1);
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+  }
+
+  .carousel-cta:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+  }
+
+  .carousel-track {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    will-change: transform;
+  }
+
+  .carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1);
+    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .carousel-controls {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 8;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(17, 17, 17, 0.42);
+    backdrop-filter: blur(2px);
+  }
+
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  }
+
+  .carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.95);
+    transform: scale(1.08);
+  }
+
+  .carousel-dot.is-active {
+    background: #ffffff;
+    border-color: #ffffff;
+  }
+
+  @media (max-width: 900px) {
+    .carousel-frame {
+      height: min(54vh, 520px);
+      min-height: 280px;
+    }
+
+    .carousel-controls {
+      bottom: 14px;
+      gap: 8px;
+    }
+
+    .carousel-dot {
+      width: 9px;
+      height: 9px;
+    }
+
+    .carousel-headline {
+      gap: 18px;
+    }
+
+    .carousel-cta {
+      min-width: 148px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 11px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-slide img {
+      transition: none;
+    }
+  }
+</style>

@@ -10,4 +10,7 @@ export default defineConfig({
   site: "https://nickmourtoupalas.com",
   base: isGithubProjectPage ? "/nckmourt.github.io/" : "/",
   trailingSlash: "always",
+  devToolbar: {
+    enabled: false,
+  },
 });

@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import GraphicsCategoryPage from "../../components/GraphicsCategoryPage.astro";
+
+const projects = await getCollection("projects");
+
+const explainersProjects = projects
+  .filter((project) => project.data.tags.includes("explainers"))
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+---
+<GraphicsCategoryPage
+  pageTitle="Explainers"
+  pageDescription="Explanatory graphics that break down policy, process, and outcomes."
+  projects={explainersProjects}
+  emptyState="No explainer projects found yet."
+/>

@@ -22,7 +22,6 @@ const target = data.externalUrl ? "_blank" : "_self";
       {data.role && <span class="role">• {data.role}</span>}
     </div>
     <h3 class="title">{data.title}</h3>
-    <p class="description">{data.description}</p>
   </div>
 </a>
 
@@ -90,7 +89,7 @@ const target = data.externalUrl ? "_blank" : "_self";
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: clamp(1.5rem, 3vw, 2.15rem);
     line-height: 1.3;
     margin-bottom: 8px;
     font-family: 'Merriweather', serif;
@@ -98,12 +97,4 @@ const target = data.externalUrl ? "_blank" : "_self";
     transition: color 0.2s ease;
   }
 
-  .description {
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    opacity: 0.9;
-  }
-  
 </style>

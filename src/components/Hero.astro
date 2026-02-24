@@ -1,215 +1,25 @@
 ---
-const slides = [
-  { type: "image", src: "/slides/1.jpg", alt: "Featured slide 1" },
-  { type: "image", src: "/slides/2.jpg", alt: "Featured slide 2" },
-  { type: "image", src: "/slides/3.jpg", alt: "Featured slide 3" },
-  { type: "placeholder", label: "Add /public/slides/4.jpg" },
-];
+import ImageCarousel from "./ImageCarousel.astro";
 
-const loopSlides = [
-  slides[slides.length - 1],
-  ...slides,
-  slides[0],
-];
+const { slides = [] } = Astro.props;
 ---
 <section class="hero-home" aria-label="Featured image carousel">
-  <div class="carousel-frame">
-    <div class="carousel-track">
-      {loopSlides.map((slide) => (
-        <div class="carousel-slide">
-          {slide.type === "image" ? (
-            <img src={slide.src} alt={slide.alt} loading="lazy" />
-          ) : (
-            <div class="slide-placeholder">
-              <span>{slide.label}</span>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-    <div class="carousel-controls" aria-label="Carousel slide controls">
-      {slides.map((_, index) => (
-        <button
-          class={`carousel-dot ${index === 0 ? "is-active" : ""}`}
-          type="button"
-          aria-label={`Go to slide ${index + 1}`}
-          data-slide-index={index}
-        ></button>
-      ))}
-    </div>
-  </div>
+  <ImageCarousel
+    headline="Featured Graphics"    ctaLabel="Read more"
+    ctaHref="/graphics/"
+    marginTop="0px"
+    slides={slides}
+  />
 
   <div class="hero-intro container">
     <h1 class="hero-name">Nick Mourtoupalas</h1>
     <p class="hero-bio">
-      I build visual systems that make complex institutions understandable. I report, analyze, and design visual
-      tools that explain how power, policy, markets, and communities shape daily life.
+      I build data-driven visual coverage that helps readers understand how government and markets function.
+      Drawing on newsroom reporting, quantitative analysis and technical development, I create durable tools that
+      clarify complex institutions in moments that matter.
     </p>
   </div>
 </section>
-
-<script>
-  const carouselFrame = document.querySelector(".carousel-frame");
-  const carouselTrack = document.querySelector(".carousel-track");
-  const carouselDots = document.querySelectorAll(".carousel-dot");
-  const totalSlides = carouselDots.length;
-  let currentOffset = 1;
-  const intervalTime = 4200;
-  let autoplayTimer;
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let suppressClickUntil = 0;
-  let isDragging = false;
-  let startTranslateX = 0;
-  let dragDeltaX = 0;
-
-  function slideWidth() {
-    return carouselFrame?.clientWidth || 1;
-  }
-
-  function getLogicalIndex() {
-    let logical = currentOffset - 1;
-    if (logical < 0) logical = totalSlides - 1;
-    if (logical >= totalSlides) logical = 0;
-    return logical;
-  }
-
-  function updateDots() {
-    const logical = getLogicalIndex();
-    carouselDots.forEach((dot, idx) => {
-      dot.classList.toggle("is-active", idx === logical);
-    });
-  }
-
-  function setTrackTransform(valuePx, withTransition) {
-    if (!carouselTrack) return;
-    carouselTrack.style.transition = withTransition ? "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)" : "none";
-    carouselTrack.style.transform = `translate3d(${valuePx}px, 0, 0)`;
-  }
-
-  function snapToOffset(withTransition = true) {
-    const x = -(currentOffset * slideWidth());
-    setTrackTransform(x, withTransition);
-    updateDots();
-  }
-
-  function goToLogicalIndex(index) {
-    currentOffset = index + 1;
-    snapToOffset(true);
-  }
-
-  function advanceSlide() {
-    if (totalSlides <= 1) return;
-    currentOffset += 1;
-    snapToOffset(true);
-  }
-
-  function previousSlide() {
-    if (totalSlides <= 1) return;
-    currentOffset -= 1;
-    snapToOffset(true);
-  }
-
-  function scheduleNextAdvance() {
-    clearTimeout(autoplayTimer);
-    autoplayTimer = setTimeout(() => {
-      advanceSlide();
-      scheduleNextAdvance();
-    }, intervalTime);
-  }
-
-  if (totalSlides > 0 && carouselFrame && carouselTrack) {
-    snapToOffset(false);
-
-    carouselTrack.addEventListener("transitionend", () => {
-      if (currentOffset === 0) {
-        currentOffset = totalSlides;
-        snapToOffset(false);
-      } else if (currentOffset === totalSlides + 1) {
-        currentOffset = 1;
-        snapToOffset(false);
-      }
-    });
-
-    window.addEventListener("resize", () => {
-      if (!isDragging) snapToOffset(false);
-    });
-
-    carouselFrame?.addEventListener("touchstart", (event) => {
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-      isDragging = true;
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-      dragDeltaX = 0;
-      startTranslateX = -(currentOffset * slideWidth());
-      setTrackTransform(startTranslateX, false);
-    }, { passive: true });
-
-    carouselFrame?.addEventListener("touchmove", (event) => {
-      if (!isDragging) return;
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-      dragDeltaX = touch.clientX - touchStartX;
-      setTrackTransform(startTranslateX + dragDeltaX, false);
-    }, { passive: true });
-
-    carouselFrame?.addEventListener("touchend", (event) => {
-      const touch = event.changedTouches?.[0];
-      if (!touch) return;
-
-      const deltaX = touch.clientX - touchStartX;
-      const deltaY = touch.clientY - touchStartY;
-      const absX = Math.abs(deltaX);
-      const absY = Math.abs(deltaY);
-      const swipeThreshold = Math.min(80, slideWidth() * 0.14);
-
-      if (absX > swipeThreshold && absX > absY) {
-        if (deltaX < 0) {
-          advanceSlide();
-        } else {
-          previousSlide();
-        }
-        suppressClickUntil = Date.now() + 350;
-      } else {
-        snapToOffset(true);
-      }
-      isDragging = false;
-      scheduleNextAdvance();
-    }, { passive: true });
-
-    carouselFrame?.addEventListener("click", (event) => {
-      if (Date.now() < suppressClickUntil) return;
-      if (isDragging) return;
-
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      if (target.closest(".carousel-controls")) return;
-
-      const rect = carouselFrame.getBoundingClientRect();
-      const clickX = event.clientX - rect.left;
-
-      if (clickX < rect.width / 2) {
-        previousSlide();
-      } else {
-        advanceSlide();
-      }
-      scheduleNextAdvance();
-    });
-
-    carouselDots.forEach((dot) => {
-      dot.addEventListener("click", () => {
-        const index = Number(dot.getAttribute("data-slide-index"));
-        if (!Number.isNaN(index)) {
-          goToLogicalIndex(index);
-          scheduleNextAdvance();
-        }
-      });
-    });
-
-    scheduleNextAdvance();
-  }
-</script>
 
 <style>
   .hero-home {
@@ -217,104 +27,8 @@ const loopSlides = [
     background: #111111;
   }
 
-  .carousel-frame {
-    width: 100%;
-    height: min(66vh, 760px);
-    min-height: 360px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .carousel-frame::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: var(--divider-width);
-    border-bottom: 1px solid #202630;
-    pointer-events: none;
-    z-index: 7;
-  }
-
-  .carousel-track {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    will-change: transform;
-  }
-
-  .carousel-slide {
-    flex: 0 0 100%;
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-
-  .carousel-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transform: scale(1);
-    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
   :global(.hero-home.is-scrolled .carousel-slide img) {
     transform: scale(1.1) !important;
-  }
-
-  .slide-placeholder {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    background:
-      radial-gradient(circle at 20% 20%, rgba(95, 121, 170, 0.35), transparent 42%),
-      radial-gradient(circle at 80% 70%, rgba(68, 85, 118, 0.35), transparent 46%),
-      linear-gradient(135deg, #1b2330, #0b1119 55%, #080d14);
-    color: #d4dde8;
-    font-family: "Inter", sans-serif;
-    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
-  .carousel-controls {
-    position: absolute;
-    left: 50%;
-    bottom: 18px;
-    transform: translateX(-50%);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 8;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(17, 17, 17, 0.42);
-    backdrop-filter: blur(2px);
-  }
-
-  .carousel-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    background: rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    padding: 0;
-    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-  }
-
-  .carousel-dot:hover {
-    background: rgba(255, 255, 255, 0.55);
-    border-color: rgba(255, 255, 255, 0.95);
-    transform: scale(1.08);
-  }
-
-  .carousel-dot.is-active {
-    background: #ffffff;
-    border-color: #ffffff;
   }
 
   .hero-intro {
@@ -347,21 +61,6 @@ const loopSlides = [
   }
 
   @media (max-width: 900px) {
-    .carousel-frame {
-      height: min(54vh, 520px);
-      min-height: 280px;
-    }
-
-    .carousel-controls {
-      bottom: 14px;
-      gap: 8px;
-    }
-
-    .carousel-dot {
-      width: 9px;
-      height: 9px;
-    }
-
     .hero-name {
       font-size: clamp(1.8rem, 8vw, 2.6rem);
       margin-bottom: 10px;
@@ -377,12 +76,6 @@ const loopSlides = [
     .hero-bio {
       font-size: 15px;
       line-height: 1.6;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .carousel-slide img {
-      transition: none;
     }
   }
 </style>

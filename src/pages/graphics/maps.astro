@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import GraphicsCategoryPage from "../../components/GraphicsCategoryPage.astro";
+
+const projects = await getCollection("projects");
+
+const mapsProjects = projects
+  .filter((project) => project.data.tags.includes("maps"))
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+---
+<GraphicsCategoryPage
+  pageTitle="Maps"
+  pageDescription="Geography-driven graphics and map-based reporting."
+  projects={mapsProjects}
+  emptyState="No map-focused projects found yet."
+/>

@@ -4,6 +4,7 @@ description: "Immigration is driving U.S. population growth, partially offsettin
 "
 date: "2025-06-26"
 role: "Graphics Reporter"
+tags: []
 featured: false
 externalUrl: "https://wapo.st/4qpxmYa"
 heroImage: "/images/projects/immigrants-drive-population-growth-in-a-graying-am.jpg"
