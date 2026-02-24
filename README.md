@@ -10,10 +10,6 @@ Your canonical, shareable resume URL is:
 
 This file is served from `public/resume.pdf`. Replacing that one file updates the URL everywhere.
 
-Compatibility path for your requested pattern:
-
-- `https://nckmourt.com/public/resume.pdf`
-
 ## Update workflow
 
 1. Export your latest resume as a PDF.
@@ -26,7 +22,7 @@ npm run resume:update -- /path/to/your/latest-resume.pdf
 3. Commit and push:
 
 ```bash
-git add public/resume.pdf public/public/resume.pdf
+git add public/resume.pdf
 
 git commit -m "Update resume"
 
