@@ -1,6 +1,4 @@
 ---
-import SocialLinks from "./SocialLinks.astro";
-
 const navMain = [
   { href: "/", label: "Home" },
   { href: "/photos/", label: "Photos" },
@@ -38,15 +36,12 @@ const graphicsDropdown = [
         {navMain.slice(1).map((item) => (
           <a href={item.href} class="mobile-nav-link">{item.label}</a>
         ))}
-        <SocialLinks className="mobile-menu-social" iconSet="navWhite" />
       </nav>
     </details>
 
     <a href="/" class="brand">
       <span class="brand-name">NICK MOURTOUPALAS</span>
     </a>
-
-    <SocialLinks className="nav-social" iconSet="navWhite" />
 
     <nav class="site-nav">
       <a href="/" class="nav-link">Home</a>
@@ -196,14 +191,7 @@ const graphicsDropdown = [
   .dropdown-link:hover {
     text-decoration: none;
     color: var(--link);
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  :global(.nav-social) {
-    margin-left: 34px;
-    --social-size: 26px;
-    --social-color: #ffffff;
-    --social-hover-color: #ffffff;
+    background: rgba(var(--theme-accent-rgb), 0.16);
   }
 
   .nav-link {
@@ -324,7 +312,7 @@ const graphicsDropdown = [
   .mobile-nav-link:hover {
     text-decoration: none;
     color: var(--link);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(var(--theme-accent-rgb), 0.12);
   }
 
   .mobile-submenu {
@@ -450,21 +438,6 @@ const graphicsDropdown = [
       text-overflow: ellipsis;
       display: block;
       transform: none;
-    }
-
-    :global(.nav-social) {
-      display: none !important;
-    }
-
-    :global(.mobile-menu-social) {
-      margin-top: 8px;
-      width: auto;
-      display: flex;
-      justify-content: center;
-      justify-self: center;
-      --social-size: 22px;
-      --social-color: #ffffff;
-      --social-hover-color: #ffffff;
     }
 
     .mobile-menu summary {

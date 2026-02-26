@@ -15,14 +15,17 @@ const {
     <link id="site-touch-icon" rel="apple-touch-icon" href="/favicon-dark.png?v=5" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,600;7..72,700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
     <style is:global>
       :root{
         --bg:#111111;
         --text:#f3f6fb;
         --muted:#666666;
         --accent:#ffffff;
-        --link:#dbe6ff;
+        --theme-accent:#56b0ff;
+        --theme-accent-rgb:86,176,255;
+        --theme-accent-soft:rgba(var(--theme-accent-rgb), 0.16);
+        --link:var(--theme-accent);
         --hero-blue: #0F1C3F;
         --max:1080px;
         --page-gutter: clamp(18px, 4vw, 56px);
@@ -54,7 +57,11 @@ const {
       }
 
       a{color:var(--link); text-decoration:none; transition: color 0.2s ease;}
-      a:hover{text-decoration:underline}
+      a:hover{color:var(--theme-accent); text-decoration:underline}
+      ::selection {
+        background: rgba(var(--theme-accent-rgb), 0.35);
+        color: #ffffff;
+      }
       
       .wrap{
         /* max-width is removed here to allow full-width sections. 
@@ -80,15 +87,19 @@ const {
         display:inline-flex; align-items:center; gap:8px;
         padding:8px 16px;
         border-radius:4px;
-        border:1px solid rgba(128,128,128,0.2);
-        background: transparent;
+        border:1px solid rgba(var(--theme-accent-rgb),0.45);
+        background: rgba(var(--theme-accent-rgb), 0.08);
         color:var(--text);
         text-decoration:none;
         font-family: 'Inter', sans-serif;
         font-size: 14px;
         font-weight: 500;
       }
-      .btn:hover{background:rgba(128,128,128,0.1); text-decoration:none}
+      .btn:hover{
+        background: rgba(var(--theme-accent-rgb), 0.16);
+        border-color: rgba(var(--theme-accent-rgb), 0.75);
+        text-decoration:none;
+      }
       
     </style>
   </head>

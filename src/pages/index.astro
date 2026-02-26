@@ -68,9 +68,6 @@ function formatDisplayDate(dateText) {
     <div class="container">
       <div class="featured-intro">
         <h2 class="featured-title">Featured Work</h2>
-        <p class="featured-statement">
-          A selection of recent graphics and data journalism projects, from fast-turn vote trackers to deeply reported explainers.
-        </p>
       </div>
 
       <div class="feature-list">
@@ -121,24 +118,23 @@ function formatDisplayDate(dateText) {
       <h2 class="about-title">About & Contact</h2>
       <div class="about-grid">
         <div class="about-copy">
+          <div class="about-photo-inline-frame">
+            <img
+              class="about-photo"
+              src="/images/headshot.jpg"
+              alt="Nick Mourtoupalas headshot"
+              loading="lazy"
+            />
+          </div>
           <p>
-            Nick Mourtoupalas is a visual journalist and data reporter based in Washington, D.C.
+            Nick Mourtoupalas is a data visualization journalist based in Washington, D.C., and a native of the D.C. metropolitan area.
+            </p>
+            <p>
+            With a background in economics and data analytics, he reports on political power, public policy and economic systems, translating complex data into structured visual journalism. His work spans congressional votes, federal spending and elections, building live trackers and recurring databases used in both breaking news and long-running coverage. He combines reporting judgment, quantitative analysis and technical fluency to make government clear and measurable.
           </p>
           <p>
-            He spent more than eight years at The Washington Post, rising from copy aide to graphics reporter.
-            His work spans Congress, federal spending, elections, redistricting, courts, immigration and
-            economic policy, building interactive vote trackers, confirmation databases, maps and explainers
-            used by millions of readers.
+            In addition to his reporting, Nick enjoys shooting film photography, documenting cities, landscapes and everyday life with the same attention to structure and composition that informs his journalism. Outside of work, he enjoys seeing live music, exploring Washington, running and traveling.
           </p>
-          <p>
-            Nick combines reporting judgment with data analysis, cartography and front-end development to make
-            complex systems clear. He works from raw datasets to finished graphics, often under breaking news
-            deadlines, and builds reusable tools that strengthen newsroom coverage over time.
-          </p>
-          <p>
-            <a class="btn resume-link" href="/resume.pdf" target="_blank" rel="noopener noreferrer">View Resume</a>
-          </p>
-          <SocialLinks className="about-social" iconSet="navWhite" />
         </div>
         <div class="about-photo-frame">
           <img
@@ -147,6 +143,10 @@ function formatDisplayDate(dateText) {
             alt="Nick Mourtoupalas headshot"
             loading="lazy"
           />
+        </div>
+        <div class="about-actions">
+          <a class="btn resume-link" href="/resume.pdf" target="_blank" rel="noopener noreferrer">View Resume</a>
+          <SocialLinks className="about-social" iconSet="navWhite" />
         </div>
       </div>
     </div>
@@ -262,10 +262,10 @@ function formatDisplayDate(dateText) {
 
   .feature-headline {
     font-size: clamp(1.5rem, 3vw, 2.15rem);
-    line-height: 0.95;
+    line-height: 1.08;
     margin: 0 30px 16px 0;
     color: #ffffff;
-    font-family: "Baskervville", "Baskervville Variable", Georgia, "Times New Roman", serif;
+    font-family: "Literata", Georgia, "Times New Roman", serif;
     transition: color 0.2s ease;
   }
 
@@ -337,9 +337,9 @@ function formatDisplayDate(dateText) {
 
   .about-grid {
     display: grid;
-    grid-template-columns: minmax(320px, 540px) minmax(180px, 240px);
+    grid-template-columns: minmax(320px, 540px) 240px;
     align-items: start;
-    gap: 4px;
+    gap: 18px;
     justify-content: center;
   }
 
@@ -348,36 +348,56 @@ function formatDisplayDate(dateText) {
     color: #f3f6fb;
     font-size: 16px;
     line-height: 1.6;
-    max-width: 540px;
+    max-width: none;
+    width: 100%;
     justify-self: start;
   }
 
   .about-copy p {
     margin: 0 0 26px;
-    max-width: 90%;
+    max-width: none;
+  }
+
+  .about-photo-inline-frame {
+    display: none !important;
   }
 
   :global(.about-social) {
     --social-size: 26px;
-    --social-bg: #1c2431;
-    --social-border: #3a4558;
+    --social-bg: rgba(var(--theme-accent-rgb), 0.12);
+    --social-border: rgba(var(--theme-accent-rgb), 0.45);
     --social-color: #ffffff;
-    --social-hover-bg: #253246;
-    --social-hover-border: #4f617f;
+    --social-hover-bg: rgba(var(--theme-accent-rgb), 0.2);
+    --social-hover-border: rgba(var(--theme-accent-rgb), 0.8);
     --social-hover-color: #ffffff;
   }
 
   .resume-link {
-    border-color: #4f617f;
-    background: #1c2431;
+    border-color: rgba(var(--theme-accent-rgb), 0.5);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+  }
+
+  .about-actions {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .about-actions :global(.about-social) {
+    margin-left: auto;
   }
 
   .resume-link:hover {
-    background: #253246;
-    border-color: #5f7395;
+    background: rgba(var(--theme-accent-rgb), 0.2);
+    border-color: rgba(var(--theme-accent-rgb), 0.8);
   }
 
   .about-photo-frame {
+    display: block !important;
     width: 100%;
     max-width: 240px;
     justify-self: start;
@@ -446,21 +466,36 @@ function formatDisplayDate(dateText) {
 
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 820px) {
     .about-grid {
-      grid-template-columns: 1fr;
-      gap: 28px;
-    }
-
-    .about-copy p {
-      max-width: none;
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: stretch;
     }
 
     .about-photo-frame {
-      width: 200px;
-      height: 200px;
-      max-width: 200px;
-      justify-self: center;
+      display: none !important;
+    }
+
+    .about-photo-inline-frame {
+      float: right;
+      display: block !important;
+      width: 160px;
+      height: 160px;
+      border: 6px solid #2d3748;
+      background: #111722;
+      margin: 0 0 12px 14px;
+    }
+
+    .about-actions {
+      margin-top: 8px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .about-photo-inline-frame {
+      width: 120px;
+      height: 120px;
+      margin-left: 10px;
     }
   }
 </style>
