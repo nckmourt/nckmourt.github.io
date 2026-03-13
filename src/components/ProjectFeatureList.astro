@@ -1,0 +1,315 @@
+---
+const {
+  projects = [],
+  className = "",
+  initialVisibleCount = null,
+  showMoreLabel = "Show more",
+  showLessLabel = "Show less",
+} = Astro.props;
+
+const hasToggle =
+  Number.isInteger(initialVisibleCount) &&
+  initialVisibleCount > 0 &&
+  projects.length > initialVisibleCount;
+const visibleProjects = hasToggle ? projects.slice(0, initialVisibleCount) : projects;
+const hiddenProjects = hasToggle ? projects.slice(initialVisibleCount) : [];
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+function formatDisplayDate(dateText) {
+  const parsed = new Date(dateText);
+  return Number.isNaN(parsed.getTime()) ? dateText : dateFormatter.format(parsed);
+}
+---
+<div
+  class:list={["feature-list", className, hasToggle && "is-collapsible"]}
+  data-collapsible={hasToggle ? "true" : "false"}
+>
+  {visibleProjects.map((p) => {
+    const href = p.data.externalUrl || `/projects/${p.slug}/`;
+    const target = p.data.externalUrl ? "_blank" : "_self";
+    return (
+      <a
+        class="feature-row"
+        href={href}
+        target={target}
+        rel={p.data.externalUrl ? "noopener noreferrer" : ""}
+        aria-label={p.data.title}
+      >
+        <div class="feature-media">
+          {p.data.heroImage ? (
+            <img
+              class="feature-image"
+              src={p.data.heroImage}
+              alt={p.data.title}
+              loading="lazy"
+            />
+          ) : (
+            <div class="feature-image feature-placeholder">{p.data.title}</div>
+          )}
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-meta">{formatDisplayDate(p.data.date)}</div>
+          <h3 class="feature-title">{p.data.title}</h3>
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+              <path d="M14 4h6v6" />
+              <path d="M20 4 11 13" />
+              <path d="M20 13v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h3" />
+            </svg>
+          </span>
+        </div>
+      </a>
+    );
+  })}
+  {hasToggle && (
+    <div class="feature-hidden-group" hidden>
+      {hiddenProjects.map((p) => {
+        const href = p.data.externalUrl || `/projects/${p.slug}/`;
+        const target = p.data.externalUrl ? "_blank" : "_self";
+        return (
+          <a
+            class="feature-row"
+            href={href}
+            target={target}
+            rel={p.data.externalUrl ? "noopener noreferrer" : ""}
+            aria-label={p.data.title}
+          >
+            <div class="feature-media">
+              {p.data.heroImage ? (
+                <img
+                  class="feature-image"
+                  src={p.data.heroImage}
+                  alt={p.data.title}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="feature-image feature-placeholder">{p.data.title}</div>
+              )}
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-meta">{formatDisplayDate(p.data.date)}</div>
+              <h3 class="feature-title">{p.data.title}</h3>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M14 4h6v6" />
+                  <path d="M20 4 11 13" />
+                  <path d="M20 13v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h3" />
+                </svg>
+              </span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  )}
+</div>
+{hasToggle && (
+  <div class="feature-toggle-wrap">
+    <button
+      type="button"
+      class="feature-toggle"
+      aria-expanded="false"
+      data-show-more-label={showMoreLabel}
+      data-show-less-label={showLessLabel}
+    >
+      {showMoreLabel}
+    </button>
+  </div>
+)}
+
+<style>
+  .feature-list {
+    display: grid;
+    gap: 56px;
+    margin-inline: auto;
+    margin-top: 0;
+  }
+
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .feature-media {
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    aspect-ratio: 200 / 133;
+  }
+
+  .feature-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+
+  .feature-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 30px;
+    font-family: "Merriweather", serif;
+    font-size: 1.3rem;
+    color: var(--placeholder-text);
+    background: var(--placeholder-bg);
+    text-align: center;
+  }
+
+  .feature-card {
+    position: relative;
+    background: var(--surface-1);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    box-shadow: var(--card-shadow);
+    padding: 16px 18px 18px;
+    max-width: 560px;
+  }
+
+  .feature-meta {
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+  }
+
+  .feature-title {
+    font-size: clamp(1.5rem, 3vw, 2.15rem);
+    line-height: 1.2;
+    margin: 0 26px 10px 0;
+    color: var(--text-heading);
+    font-family: "Literata", Georgia, "Times New Roman", serif;
+    transition: color 0.2s ease;
+  }
+
+  .feature-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    line-height: 0;
+    color: var(--text-muted);
+  }
+
+  .feature-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-muted);
+    stroke-width: 2.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feature-row:hover {
+    text-decoration: none;
+  }
+
+  .feature-row:hover .feature-image {
+    transform: scale(1.05);
+    filter: brightness(0.9);
+  }
+
+  .feature-row:hover .feature-title {
+    color: var(--link);
+  }
+
+  .feature-toggle-wrap {
+    margin-top: 26px;
+    text-align: center;
+  }
+
+  .feature-hidden-group {
+    display: grid;
+    gap: inherit;
+  }
+
+  .feature-hidden-group[hidden] {
+    display: none;
+  }
+
+  .feature-toggle {
+    border: 1px solid var(--border-strong);
+    background: var(--surface-1);
+    color: var(--text);
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .feature-toggle:hover {
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    border-color: rgba(var(--theme-accent-rgb), 0.45);
+  }
+
+  @media (min-width: 980px) {
+    .feature-list {
+      gap: 86px;
+    }
+
+    .feature-row {
+      grid-template-columns: minmax(0, 50%) minmax(0, 50%);
+      align-items: center;
+      gap: 0;
+    }
+
+    .feature-row .feature-media {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .feature-row .feature-card {
+      grid-column: 1;
+      grid-row: 1;
+      z-index: 2;
+      margin-right: -60px;
+      max-width: 620px;
+    }
+
+  }
+</style>
+
+<script>
+  document.querySelectorAll(".feature-list[data-collapsible='true']").forEach((list) => {
+    const hiddenGroup = list.querySelector(".feature-hidden-group");
+    if (!hiddenGroup) {
+      return;
+    }
+
+    const toggleWrap = list.nextElementSibling;
+    if (!toggleWrap || !toggleWrap.classList.contains("feature-toggle-wrap")) {
+      return;
+    }
+
+    const button = toggleWrap.querySelector(".feature-toggle");
+    if (!button) {
+      return;
+    }
+
+    const showMoreText = button.getAttribute("data-show-more-label") || "Show more";
+    const showLessText = button.getAttribute("data-show-less-label") || "Show less";
+    let expanded = false;
+
+    button.addEventListener("click", () => {
+      expanded = !expanded;
+      hiddenGroup.hidden = !expanded;
+      button.setAttribute("aria-expanded", expanded ? "true" : "false");
+      button.textContent = expanded ? showLessText : showMoreText;
+    });
+  });
+</script>

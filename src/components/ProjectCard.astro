@@ -47,9 +47,9 @@ const target = data.externalUrl ? "_blank" : "_self";
     aspect-ratio: 16/9;
     border-radius: 4px;
     overflow: hidden;
-    background: #f0f0f0;
+    background: var(--surface-2);
     margin-bottom: 16px;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid var(--border-strong);
     /* Ensure the zoom doesn't overflow */
     position: relative;
   }
@@ -73,8 +73,8 @@ const target = data.externalUrl ? "_blank" : "_self";
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #eee 0%, #ddd 100%);
-    color: #666;
+    background: var(--placeholder-bg);
+    color: var(--placeholder-text);
     padding: 20px;
     text-align: center;
   }

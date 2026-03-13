@@ -1,16 +1,15 @@
 ---
-import { getCollection } from "astro:content";
-import GraphicsCategoryPage from "../../components/GraphicsCategoryPage.astro";
-
-const projects = await getCollection("projects");
-
-const breakingNewsProjects = projects
-  .filter((project) => project.data.tags.includes("breaking-news"))
-  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+const target = "/#graphics-breaking-news";
 ---
-<GraphicsCategoryPage
-  pageTitle="Breaking News"
-  pageDescription="Fast-turn graphics built for major news moments."
-  projects={breakingNewsProjects}
-  emptyState="No breaking-news projects found yet."
-/>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <p><a href={target}>Continue to Breaking News</a></p>
+  </body>
+</html>

@@ -50,12 +50,12 @@ const carouselSlides = projects
   <section id="all-projects" class="panel" style="margin-top:18px;">
     {projects.length > 0 ? (
       <div class="feature-list content-frame">
-        {projects.map((p, index) => {
+        {projects.map((p) => {
           const href = p.data.externalUrl || `/projects/${p.slug}/`;
           const target = p.data.externalUrl ? "_blank" : "_self";
           return (
             <a
-              class={`feature-row ${index % 2 ? "is-reversed" : ""}`}
+              class="feature-row"
               href={href}
               target={target}
               rel={p.data.externalUrl ? "noopener noreferrer" : ""}
@@ -102,12 +102,12 @@ const carouselSlides = projects
 <style>
   :global(body),
   :global(main) {
-    background: #111111;
+    background: var(--surface-0);
   }
 
   .panel .h1,
   .panel .h2 {
-    color: #ffffff;
+    color: var(--text-heading);
   }
 
   .graphics-heading {
@@ -117,7 +117,7 @@ const carouselSlides = projects
 
   .graphics-title {
     margin: 0;
-    color: #ffffff;
+    color: var(--text-heading);
     text-transform: uppercase;
     letter-spacing: 0.02em;
     line-height: 0.85;
@@ -156,8 +156,8 @@ const carouselSlides = projects
   .feature-media {
     border-radius: 2px;
     overflow: hidden;
-    border: 1px solid #2a2d33;
-    background: #11141a;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
     aspect-ratio: 200 / 133;
   }
 
@@ -175,17 +175,17 @@ const carouselSlides = projects
     padding: 30px;
     font-family: "Merriweather", serif;
     font-size: 1.3rem;
-    color: #555;
-    background: linear-gradient(135deg, #ececec 0%, #dbdbdb 100%);
+    color: var(--placeholder-text);
+    background: var(--placeholder-bg);
     text-align: center;
   }
 
   .feature-card {
     position: relative;
-    background: #171b21;
-    border: 1px solid #2d323a;
-    color: #f2f4f7;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    background: var(--surface-1);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    box-shadow: var(--card-shadow);
     padding: 16px 18px 18px;
     max-width: 560px;
   }
@@ -194,7 +194,7 @@ const carouselSlides = projects
     font-size: 14px;
     line-height: 1.2;
     margin-bottom: 10px;
-    color: #a6adb9;
+    color: var(--text-muted);
     font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
   }
 
@@ -202,7 +202,7 @@ const carouselSlides = projects
     font-size: clamp(1.5rem, 3vw, 2.15rem);
     line-height: 1.2;
     margin: 0 26px 10px 0;
-    color: #ffffff;
+    color: var(--text-heading);
     font-family: "Literata", Georgia, "Times New Roman", serif;
     transition: color 0.2s ease;
   }
@@ -212,13 +212,13 @@ const carouselSlides = projects
     top: 16px;
     right: 16px;
     line-height: 0;
-    color: #a6adb9;
+    color: var(--text-muted);
   }
 
   .feature-icon svg {
     width: 22px;
     height: 22px;
-    stroke: #a6adb9;
+    stroke: var(--text-muted);
     stroke-width: 2.4;
     fill: none;
     stroke-linecap: round;
@@ -239,7 +239,7 @@ const carouselSlides = projects
   }
 
   .empty-state {
-    color: #d4d9e2;
+    color: var(--text-soft);
     font-family: "Inter", sans-serif;
   }
 
@@ -267,15 +267,6 @@ const carouselSlides = projects
       max-width: 620px;
     }
 
-    .feature-row.is-reversed .feature-media {
-      grid-column: 1;
-    }
-
-    .feature-row.is-reversed .feature-card {
-      grid-column: 2;
-      margin-right: 0;
-      margin-left: -60px;
-    }
   }
 
   @media (max-width: 900px) {

@@ -1,0 +1,288 @@
+---
+const {
+  projects = [],
+  filters = [],
+  className = "",
+} = Astro.props;
+
+const activeFilters = filters.length
+  ? filters
+  : [
+      { key: "votes", label: "Votes" },
+      { key: "trackers", label: "Trackers" },
+      { key: "maps", label: "Maps" },
+      { key: "explainers", label: "Explainers" },
+      { key: "breaking-news", label: "Breaking News" },
+    ];
+
+const filterKeys = new Set(activeFilters.map((filter) => filter.key));
+const graphicsProjects = projects.filter((project) =>
+  Array.isArray(project.data.tags) && project.data.tags.some((tag) => filterKeys.has(tag)),
+);
+
+function formatTagLabel(tag) {
+  return tag
+    .split("-")
+    .map((part) => (part ? part[0].toUpperCase() + part.slice(1) : part))
+    .join(" ");
+}
+---
+<div class:list={["graphics-filter-grid", className]} data-graphics-filter-grid>
+  <nav class="graphics-filter-nav" aria-label="Graphics categories">
+    <button class="graphics-filter-button is-active" type="button" data-filter="all" aria-pressed="true">
+      All
+    </button>
+    {activeFilters.map((filter) => (
+      <button
+        id={`graphics-${filter.key}`}
+        class="graphics-filter-button"
+        type="button"
+        data-filter={filter.key}
+        aria-pressed="false"
+      >
+        {filter.label}
+      </button>
+    ))}
+  </nav>
+
+  <div class="graphics-grid" data-graphics-grid>
+    {graphicsProjects.map((project) => {
+      const href = project.data.externalUrl || `/projects/${project.slug}/`;
+      const target = project.data.externalUrl ? "_blank" : "_self";
+      return (
+        <a
+          class="graphics-card"
+          href={href}
+          target={target}
+          rel={project.data.externalUrl ? "noopener noreferrer" : ""}
+          data-tags={project.data.tags.join(",")}
+          aria-label={project.data.title}
+        >
+          <div class="graphics-card-media">
+            {project.data.heroImage ? (
+              <img src={project.data.heroImage} alt={project.data.title} loading="lazy" />
+            ) : (
+              <div class="graphics-card-placeholder">{project.data.title}</div>
+            )}
+          </div>
+          <h3 class="graphics-card-title">{project.data.title}</h3>
+          <div class="graphics-card-tags" aria-label="Project tags">
+            {project.data.tags.map((tag) => (
+              <span class="graphics-card-tag">{formatTagLabel(tag)}</span>
+            ))}
+          </div>
+        </a>
+      );
+    })}
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector("[data-graphics-filter-grid]");
+  if (root) {
+    const buttons = Array.from(root.querySelectorAll(".graphics-filter-button"));
+    const cards = Array.from(root.querySelectorAll(".graphics-card"));
+    const validKeys = new Set(buttons.map((button) => button.dataset.filter).filter(Boolean));
+
+    const readFilterFromHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash.startsWith("graphics-")) return "all";
+      const key = hash.slice("graphics-".length);
+      return validKeys.has(key) ? key : "all";
+    };
+
+    const applyFilter = (key, shouldUpdateHash = false) => {
+      const nextKey = validKeys.has(key) ? key : "all";
+
+      buttons.forEach((button) => {
+        const isActive = button.dataset.filter === nextKey;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
+      cards.forEach((card) => {
+        const tags = (card.dataset.tags || "").split(",").filter(Boolean);
+        const matches = nextKey === "all" || tags.includes(nextKey);
+        card.hidden = !matches;
+      });
+
+      if (!shouldUpdateHash) return;
+      const nextHash = nextKey === "all" ? "#graphics" : `#graphics-${nextKey}`;
+      if (window.location.hash !== nextHash) {
+        history.replaceState(null, "", nextHash);
+      }
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyFilter(button.dataset.filter || "all", true);
+      });
+    });
+
+    applyFilter(readFilterFromHash());
+    window.addEventListener("hashchange", () => {
+      applyFilter(readFilterFromHash());
+    });
+  }
+</script>
+
+<style>
+  .graphics-filter-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 18px 22px 0;
+  }
+
+  .graphics-filter-nav {
+    display: flex;
+    flex-wrap: wrap;
+    width: min(100%, 860px);
+    gap: 10px;
+    margin: -86px auto 28px;
+    justify-content: flex-end;
+  }
+
+  .graphics-filter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.45);
+    background: rgba(var(--theme-accent-rgb), 0.08);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .graphics-filter-button:hover {
+    background: rgba(var(--theme-accent-rgb), 0.16);
+    border-color: rgba(var(--theme-accent-rgb), 0.8);
+  }
+
+  .graphics-filter-button.is-active {
+    background: rgba(var(--theme-accent-rgb), 0.22);
+    border-color: rgba(var(--theme-accent-rgb), 0.9);
+    color: var(--text-heading);
+  }
+
+  .graphics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .graphics-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .graphics-card[hidden] {
+    display: none !important;
+  }
+
+  .graphics-card-media {
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+  }
+
+  .graphics-card-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .graphics-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    text-align: center;
+    font-family: "Literata", Georgia, "Times New Roman", serif;
+    color: var(--placeholder-text);
+    background: var(--placeholder-bg);
+  }
+
+  .graphics-card-title {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--text-heading);
+  }
+
+  .graphics-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .graphics-card-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.35);
+    background: rgba(var(--theme-accent-rgb), 0.08);
+    color: var(--text-muted);
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .graphics-card:hover {
+    text-decoration: none;
+  }
+
+  .graphics-card:hover .graphics-card-media img {
+    transform: scale(1.03);
+  }
+
+  .graphics-card:hover .graphics-card-title {
+    color: var(--link);
+  }
+
+  @media (max-width: 1025px) {
+    .graphics-filter-nav {
+      margin-top: -72px;
+    }
+
+    .graphics-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .graphics-filter-grid {
+      padding: 14px 16px 0;
+    }
+
+    .graphics-filter-nav {
+      max-width: none;
+      margin-top: 0;
+      margin-bottom: 20px;
+      justify-content: flex-start;
+    }
+
+    .graphics-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

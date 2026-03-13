@@ -1,0 +1,61 @@
+---
+const { photos = [] } = Astro.props;
+---
+<section class="photo-gallery" aria-label="Photography gallery">
+  {photos.map((photo) => (
+    <figure class="photo-tile">
+      <img src={photo.src} alt={photo.alt} loading="lazy" />
+    </figure>
+  ))}
+</section>
+
+<style>
+  .photo-gallery {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 18px 22px 0;
+    column-count: 3;
+    column-gap: 18px;
+  }
+
+  .photo-tile {
+    margin: 0 0 18px;
+    overflow: hidden;
+    background: var(--surface-2);
+    break-inside: avoid;
+    line-height: 0;
+  }
+
+  .photo-tile img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: none;
+    object-fit: initial;
+    aspect-ratio: auto;
+    transition: opacity 0.2s ease;
+  }
+
+  .photo-tile:hover img {
+    opacity: 0.95;
+  }
+
+  @media (max-width: 1100px) {
+    .photo-gallery {
+      column-count: 2;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .photo-gallery {
+      column-count: 1;
+      padding: 14px 16px 0;
+      column-gap: 14px;
+    }
+
+    .photo-tile {
+      margin-bottom: 14px;
+    }
+  }
+</style>

@@ -1,16 +1,16 @@
 ---
 const navMain = [
   { href: "/", label: "Home" },
-  { href: "/photos/", label: "Photos" },
+  { href: "/#photos", label: "Photos" },
   { href: "/#about-contact", label: "About" },
 ];
 
 const graphicsDropdown = [
-  { href: "/graphics/votes/", label: "Votes" },
-  { href: "/graphics/trackers/", label: "Trackers" },
-  { href: "/graphics/maps/", label: "Maps" },
-  { href: "/graphics/explainers/", label: "Explainers" },
-  { href: "/graphics/breaking-news/", label: "Breaking News" },
+  { href: "/#graphics-votes", label: "Votes" },
+  { href: "/#graphics-trackers", label: "Trackers" },
+  { href: "/#graphics-maps", label: "Maps" },
+  { href: "/#graphics-explainers", label: "Explainers" },
+  { href: "/#graphics-breaking-news", label: "Breaking News" },
 ];
 ---
 <header class="site-header">
@@ -47,7 +47,7 @@ const graphicsDropdown = [
       <a href="/" class="nav-link">Home</a>
 
       <div class="nav-dropdown">
-        <a href="/graphics/" class="nav-link nav-link-graphics" aria-haspopup="true">Graphics</a>
+        <a href="/#graphics" class="nav-link nav-link-graphics" aria-haspopup="true">Graphics</a>
         <div class="dropdown-menu" role="menu" aria-label="Graphics categories">
           {graphicsDropdown.map((item) => (
             <a href={item.href} class="dropdown-link" role="menuitem">{item.label}</a>
@@ -66,23 +66,22 @@ const graphicsDropdown = [
   .site-header {
     width: 100%;
     height: var(--nav-height);
-    background: var(--header-bg);
+    background: var(--surface-0);
+    box-shadow: var(--header-shadow);
     display: block;
     position: sticky;
     top: 0;
     z-index: 100;
-    transition: height 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      height 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .site-header::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    width: var(--divider-width);
-    border-bottom: 1px solid var(--header-border);
-    pointer-events: none;
+  :global(body.home-route .site-header) {
+    position: fixed;
+    left: 0;
+    right: 0;
   }
 
   .header-inner {
@@ -110,12 +109,34 @@ const graphicsDropdown = [
   .brand-name {
     font-family: 'Bebas Neue', sans-serif; /* Bebas Neue */
     font-weight: 400; /* Bebas Neue is 400 by default but looks bold */
-    font-size: 24px;
+    font-size: 20px;
     letter-spacing: 0.05em;
     color: var(--header-text);
     text-transform: uppercase;
     white-space: nowrap;
-    transition: font-size 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      font-size 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  :global(body.home-route:not(.has-scrolled) .site-header .brand-name) {
+    opacity: 0;
+    transform: translateY(6px) scale(1.06);
+    pointer-events: none;
+  }
+
+  :global(body.home-route:not(.has-scrolled) .site-header .brand) {
+    pointer-events: none;
+  }
+
+  :global(body.home-route.has-scrolled .site-header .brand-name) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  :global(body.home-route.has-scrolled .site-header .brand) {
+    pointer-events: auto;
   }
 
   .site-nav {
@@ -209,11 +230,11 @@ const graphicsDropdown = [
   }
 
   :global(header.site-header.is-compact) {
-    height: 44px !important;
+    height: 50px !important;
   }
 
   :global(header.site-header.is-compact .brand-name) {
-    font-size: 18px !important;
+    font-size: 20px !important;
   }
   
   .nav-link:hover {
@@ -270,8 +291,8 @@ const graphicsDropdown = [
     top: calc(100% + 6px);
     width: max-content;
     max-width: calc(100vw - 28px);
-    background: #171b21;
-    border: 2px solid #2b3342;
+    background: var(--surface-1);
+    border: 2px solid var(--border-strong);
     border-radius: 24px;
     padding: 20px 18px 14px 12px;
     display: grid;
@@ -337,7 +358,7 @@ const graphicsDropdown = [
     content: "";
     width: 6px;
     height: 10px;
-    background: #ffffff;
+    background: var(--header-text);
     clip-path: polygon(0 0, 100% 50%, 0 100%);
     transform: rotate(-90deg);
     transform-origin: center;
@@ -431,7 +452,7 @@ const graphicsDropdown = [
     }
 
     .brand-name {
-      font-size: 24px;
+      font-size: 20px;
       letter-spacing: 0.04em;
       line-height: 1;
       overflow: hidden;
@@ -447,11 +468,11 @@ const graphicsDropdown = [
     }
 
     :global(header.site-header.is-compact) {
-      height: 44px !important;
+      height: 50px !important;
     }
 
     :global(header.site-header.is-compact .brand-name) {
-      font-size: 18px !important;
+      font-size: 20px !important;
     }
   }
 

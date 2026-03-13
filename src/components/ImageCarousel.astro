@@ -258,7 +258,7 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
 <style>
   .image-carousel {
     width: 100%;
-    background: #111111;
+    background: var(--surface-0);
     margin-top: var(--carousel-top-margin);
   }
 
@@ -277,7 +277,7 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
     bottom: 0;
     transform: translateX(-50%);
     width: var(--divider-width);
-    border-bottom: 1px solid #202630;
+    border-bottom: 1px solid var(--border-subtle);
     pointer-events: none;
     z-index: 7;
   }
@@ -306,8 +306,8 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
     font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(236, 241, 250, 0.92);
-    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    text-shadow: 0 2px 16px var(--carousel-overlay);
   }
 
   .carousel-title {
@@ -319,7 +319,7 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
     line-height: 1.1;
     color: #ffffff;
     font-size: clamp(1.5rem, 3.2vw, 2.6rem);
-    text-shadow: 0 4px 22px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 4px 22px var(--carousel-overlay);
   }
 
   .carousel-cta {
@@ -330,7 +330,7 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
     height: 42px;
     padding: 0 22px;
     border: 2px solid rgba(255, 255, 255, 0.85);
-    background: rgba(0, 0, 0, 1);
+    background: rgba(0, 0, 0, 0.8);
     color: #ffffff;
     text-decoration: none;
     text-transform: uppercase;
@@ -344,7 +344,7 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
 
   .carousel-cta:hover {
     opacity: 1;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.72);
     border-color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
   }
@@ -383,7 +383,7 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
     z-index: 8;
     padding: 8px 12px;
     border-radius: 999px;
-    background: rgba(17, 17, 17, 0.42);
+    background: var(--carousel-control-bg);
     backdrop-filter: blur(2px);
   }
 
@@ -391,22 +391,22 @@ const initialHref = displaySlides[0]?.href || ctaHref || "#";
     width: 10px;
     height: 10px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--carousel-dot-border);
+    background: var(--carousel-dot-bg);
     cursor: pointer;
     padding: 0;
     transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
   }
 
   .carousel-dot:hover {
-    background: rgba(255, 255, 255, 0.55);
-    border-color: rgba(255, 255, 255, 0.95);
+    background: var(--carousel-dot-hover-bg);
+    border-color: var(--carousel-dot-hover-border);
     transform: scale(1.08);
   }
 
   .carousel-dot.is-active {
-    background: #ffffff;
-    border-color: #ffffff;
+    background: var(--carousel-dot-active);
+    border-color: var(--carousel-dot-active);
   }
 
   @media (max-width: 900px) {

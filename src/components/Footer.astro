@@ -6,7 +6,7 @@
   .site-footer {
     position: relative;
     padding: 32px var(--page-gutter);
-    background: #111111;
+    background: rgba(163, 163, 163, 0.12);
     margin-top: auto;
     display: flex;
     justify-content: center;
@@ -14,22 +14,33 @@
     text-align: center;
   }
 
+  @media (prefers-color-scheme: light) {
+    .site-footer {
+      background: rgba(84, 84, 84, 0.12);
+    }
+  }
+
   .site-footer::before {
     content: "";
     position: absolute;
-    left: 50%;
+    left: 0;
     top: 0;
-    transform: translateX(-50%);
-    width: var(--divider-width);
-    border-top: 1px solid #2d323a;
+    width: 100%;
+    border-top: 1px solid #383838;
     pointer-events: none;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .site-footer::before {
+      border-top-color: #c8c8c8;
+    }
   }
 
   .footer-text {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     line-height: 1.4;
-    color: #c5cbd6;
+    color: #888888;
   }
 
 </style>

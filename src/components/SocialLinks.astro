@@ -12,7 +12,12 @@ const social = {
 ---
 <div class:list={["social-links", className]} aria-label="Social links">
   <a class="social-link" href={social.email} aria-label="Email">
-    {iconSet === "navWhite" ? (
+    {iconSet === "themeAware" ? (
+      <picture>
+        <source srcset="/icons/mail-logo-gray.svg" media="(prefers-color-scheme: light)" />
+        <img src="/icons/mail-logo-white.svg" alt="" loading="lazy" decoding="async" />
+      </picture>
+    ) : iconSet === "navWhite" ? (
       <img src="/icons/mail-logo-white.svg" alt="" loading="lazy" decoding="async" />
     ) : iconSet === "aboutGray" ? (
       <img src="/icons/mail-logo-gray.svg" alt="" loading="lazy" decoding="async" />
@@ -24,7 +29,12 @@ const social = {
     )}
   </a>
   <a class="social-link" href={social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-    {iconSet === "navWhite" ? (
+    {iconSet === "themeAware" ? (
+      <picture>
+        <source srcset="/icons/linkedin-logo-gray.svg" media="(prefers-color-scheme: light)" />
+        <img src="/icons/linkedin-logo-white.svg" alt="" loading="lazy" decoding="async" />
+      </picture>
+    ) : iconSet === "navWhite" ? (
       <img src="/icons/linkedin-logo-white.svg" alt="" loading="lazy" decoding="async" />
     ) : iconSet === "aboutGray" ? (
       <img src="/icons/linkedin-logo-gray.svg" alt="" loading="lazy" decoding="async" />
@@ -38,7 +48,12 @@ const social = {
     )}
   </a>
   <a class="social-link" href={social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-    {iconSet === "navWhite" ? (
+    {iconSet === "themeAware" ? (
+      <picture>
+        <source srcset="/icons/github-logo-gray.svg" media="(prefers-color-scheme: light)" />
+        <img src="/icons/github-logo-white.svg" alt="" loading="lazy" decoding="async" />
+      </picture>
+    ) : iconSet === "navWhite" ? (
       <img src="/icons/github-logo-white.svg" alt="" loading="lazy" decoding="async" />
     ) : iconSet === "aboutGray" ? (
       <img src="/icons/github-logo-gray.svg" alt="" loading="lazy" decoding="async" />

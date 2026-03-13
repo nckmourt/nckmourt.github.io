@@ -1,6 +1,19 @@
 ---
 const { label } = Astro.props;
 ---
-<span style="display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,0.06); font-size:12px;">
+<span class="tag-pill">
   {label}
 </span>
+
+<style>
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: rgba(var(--theme-accent-rgb), 0.08);
+    color: var(--text);
+    font-size: 12px;
+  }
+</style>

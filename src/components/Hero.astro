@@ -1,61 +1,160 @@
 ---
-import ImageCarousel from "./ImageCarousel.astro";
-
-const { slides = [] } = Astro.props;
 ---
-<section class="hero-home" aria-label="Featured image carousel">
-  <ImageCarousel
-    headline="Featured Graphics"    ctaLabel="Read more"
-    ctaHref="/graphics/"
-    marginTop="0px"
-    slides={slides}
-  />
+<section class="hero-home" aria-label="Homepage introduction">
+  <div class="hero-carousel" data-hero-carousel>
+    <div class="hero-slides" aria-hidden="true">
+      <div class="hero-slide is-active">
+        <div class="hero-slide-placeholder">Placeholder image 1</div>
+      </div>
+      <div class="hero-slide">
+        <div class="hero-slide-placeholder">Placeholder image 2</div>
+      </div>
+      <div class="hero-slide">
+        <div class="hero-slide-placeholder">Placeholder image 3</div>
+      </div>
+    </div>
 
-  <div class="hero-intro container">
-    <h1 class="hero-name">Nick Mourtoupalas</h1>
-    <p class="hero-bio">
-      I visualize political, economic and geographic data to tell focused, impactful stories and hold powerful institutions to account.
-    </p>
+    <div class="hero-overlay">
+      <h1 class="hero-name">Nick Mourtoupalas</h1>
+      <p class="hero-bio">
+        I transform data into visual reporting and interactive tools that reveal how power and policy shape the world around us.
+      </p>
+    </div>
   </div>
 </section>
+
+<script>
+  const carouselEl = document.querySelector("[data-hero-carousel]");
+  if (carouselEl) {
+    const slides = Array.from(carouselEl.querySelectorAll(".hero-slide"));
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let currentIndex = 0;
+
+    if (slides.length > 1 && !reduceMotion) {
+      window.setInterval(() => {
+        slides[currentIndex].classList.remove("is-active");
+        currentIndex = (currentIndex + 1) % slides.length;
+        slides[currentIndex].classList.add("is-active");
+      }, 5000);
+    }
+  }
+</script>
 
 <style>
   .hero-home {
     width: 100%;
-    background: #111111;
+    background: var(--surface-0);
   }
 
-  :global(.hero-home.is-scrolled .carousel-slide img) {
-    transform: scale(1.1) !important;
+  .hero-carousel {
+    position: relative;
+    width: 100%;
+    height: min(62vw, 750px);
+    min-height: 420px;
+    overflow: hidden;
+    background: var(--surface-2);
   }
 
-  .hero-intro {
-    padding-top: clamp(24px, 5vw, 52px);
-    padding-bottom: clamp(24px, 4vw, 40px);
-    background: #111111;
+  .hero-slides {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1200ms ease-in-out;
+  }
+
+  .hero-slide.is-active {
+    opacity: 1;
+  }
+
+  .hero-slide:nth-child(1) .hero-slide-placeholder {
+    background:
+      linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.26), rgba(var(--theme-accent-rgb), 0.1)),
+      linear-gradient(90deg, rgba(12, 18, 30, 0.58), rgba(12, 18, 30, 0.34));
+  }
+
+  .hero-slide:nth-child(2) .hero-slide-placeholder {
+    background:
+      linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.22), rgba(var(--theme-accent-rgb), 0.08)),
+      linear-gradient(90deg, rgba(23, 34, 18, 0.56), rgba(23, 34, 18, 0.32));
+  }
+
+  .hero-slide:nth-child(3) .hero-slide-placeholder {
+    background:
+      linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.24), rgba(var(--theme-accent-rgb), 0.09)),
+      linear-gradient(90deg, rgba(34, 18, 26, 0.56), rgba(34, 18, 26, 0.32));
+  }
+
+  .hero-slide-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(0.85rem, 1.7vw, 1.05rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-content: center;
+    place-items: center;
+    padding: 0 var(--page-gutter);
+    text-align: center;
   }
 
   .hero-name {
-    margin: 0 auto 12px;
-    width: min(100%, 980px);
+    margin: 0 auto 14px;
+    width: min(100%, 860px);
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-size: clamp(3rem, 8vw, 6rem);
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #ffffff;
+    color: var(--text-heading);
     line-height: 0.95;
+    transform-origin: left top;
+    transition:
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+
+  :global(body.home-route.has-scrolled .hero-home .hero-name) {
+    transform: translate(var(--hero-name-shift-x, 0px), var(--hero-name-shift-y, -42px)) scale(var(--hero-name-scale, 0.34));
+    opacity: 0.08;
   }
 
   .hero-bio {
     margin: 0 auto;
-    width: min(100%, 980px);
+    width: min(100%, 760px);
     max-width: none;
-    text-align: left;
+    text-align: center;
     font-family: "Inter", sans-serif;
     font-size: 16px;
     line-height: 1.65;
-    color: rgba(232, 237, 244, 0.92);
+    color: var(--text-soft);
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  :global(body.home-route.has-scrolled .hero-home .hero-bio) {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
   }
 
   @media (max-width: 900px) {
@@ -66,9 +165,13 @@ const { slides = [] } = Astro.props;
   }
 
   @media (max-width: 600px) {
-    .hero-intro {
-      padding-top: 18px;
-      padding-bottom: 26px;
+    .hero-carousel {
+      min-height: 320px;
+      height: min(82vw, 520px);
+    }
+
+    .hero-slide-placeholder {
+      font-size: 0.78rem;
     }
 
     .hero-bio {

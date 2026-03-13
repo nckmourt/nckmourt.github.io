@@ -3,6 +3,7 @@ const {
   title = "Nick Mourtoupalas",
   description = "Graphics and data visualization portfolio.",
 } = Astro.props;
+const isHomeRoute = Astro.url.pathname === "/";
 ---
 <!doctype html>
 <html lang="en">
@@ -20,26 +21,88 @@ const {
       :root{
         --bg:#111111;
         --text:#f3f6fb;
-        --muted:#666666;
+        --muted:#a8b3c6;
         --accent:#ffffff;
         --theme-accent:#56b0ff;
         --theme-accent-rgb:86,176,255;
         --theme-accent-soft:rgba(var(--theme-accent-rgb), 0.16);
         --link:var(--theme-accent);
         --hero-blue: #0F1C3F;
-        --max:1080px;
+        --max:940px;
         --page-gutter: clamp(18px, 4vw, 56px);
-        --nav-height: 64px;
-        --divider-width: min(760px, calc(100% - (var(--page-gutter) * 2)));
+        --nav-height: 50px;
+        --divider-width: min(900px, calc(100% - (var(--page-gutter) * 1.2)));
 
         /* Header specific variables */
         --header-bg: #171b21;
         --header-text: #ffffff;
         --header-border: #2d323a;
+        --header-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 6px 14px rgba(0, 0, 0, 0.18);
+        --surface-0: #111111;
+        --surface-1: #171b21;
+        --surface-2: #11141a;
+        --surface-3: #111722;
+        --border-strong: #2d323a;
+        --border-subtle: #232b3a;
+        --text-soft: #d4d9e2;
+        --text-muted: #a8b3c6;
+        --text-heading: #ffffff;
+        --footer-text: #c5cbd6;
+        --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+        --placeholder-bg: linear-gradient(135deg, #ececec 0%, #dbdbdb 100%);
+        --placeholder-text: #555555;
+        --carousel-overlay: rgba(0, 0, 0, 0.72);
+        --carousel-control-bg: rgba(17, 17, 17, 0.42);
+        --carousel-dot-border: rgba(255, 255, 255, 0.7);
+        --carousel-dot-bg: rgba(255, 255, 255, 0.2);
+        --carousel-dot-hover-bg: rgba(255, 255, 255, 0.55);
+        --carousel-dot-hover-border: rgba(255, 255, 255, 0.95);
+        --carousel-dot-active: #ffffff;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f6f8fb;
+          --text: #151a22;
+          --muted: #556274;
+          --accent: #0f1520;
+          --theme-accent: #0f5fad;
+          --theme-accent-rgb: 15,95,173;
+          --theme-accent-soft: rgba(var(--theme-accent-rgb), 0.12);
+          --link: var(--theme-accent);
+          --header-bg: #ecf1f7;
+          --header-text: #0f1520;
+          --header-border: #c8d3e0;
+          --header-shadow: 0 1px 0 rgba(15, 21, 32, 0.05), 0 6px 14px rgba(16, 32, 54, 0.08);
+          --surface-0: #f6f8fb;
+          --surface-1: #ecf1f7;
+          --surface-2: #ffffff;
+          --surface-3: #e7eef7;
+          --border-strong: #c8d3e0;
+          --border-subtle: #d5deea;
+          --text-soft: #2a3342;
+          --text-muted: #556274;
+          --text-heading: #0f1520;
+          --footer-text: #4f5d70;
+          --card-shadow: 0 8px 20px rgba(16, 32, 54, 0.1);
+          --placeholder-bg: linear-gradient(135deg, #f7f8fb 0%, #edf1f7 100%);
+          --placeholder-text: #5b6678;
+          --carousel-overlay: rgba(8, 13, 22, 0.48);
+          --carousel-control-bg: rgba(237, 243, 250, 0.72);
+          --carousel-dot-border: rgba(16, 42, 79, 0.45);
+          --carousel-dot-bg: rgba(16, 42, 79, 0.18);
+          --carousel-dot-hover-bg: rgba(16, 42, 79, 0.38);
+          --carousel-dot-hover-border: rgba(16, 42, 79, 0.7);
+          --carousel-dot-active: #0f5fad;
+        }
       }
       
       *{box-sizing:border-box}
       html,body{height:100%}
+      html { color-scheme: dark; }
+      @media (prefers-color-scheme: light) {
+        html { color-scheme: light; }
+      }
       html, body { overflow-x: hidden; }
       body{
         margin:0;
@@ -60,7 +123,7 @@ const {
       a:hover{color:var(--theme-accent); text-decoration:underline}
       ::selection {
         background: rgba(var(--theme-accent-rgb), 0.35);
-        color: #ffffff;
+        color: var(--text-heading);
       }
       
       .wrap{
@@ -103,7 +166,7 @@ const {
       
     </style>
   </head>
-  <body>
+  <body class:list={[isHomeRoute && "home-route"]}>
     <div class="wrap">
       <slot name="header" />
       <main>
@@ -137,34 +200,58 @@ const {
       const headerEl = document.querySelector(".site-header");
       const brandNameEl = document.querySelector(".site-header .brand-name");
       const heroEl = document.querySelector(".hero-home");
-      const heroImages = () => document.querySelectorAll(".hero-home .carousel-slide img");
-      let scrollTicking = false;
-      const scrollThreshold = 50;
+      const heroNameEl = document.querySelector(".hero-home .hero-name");
+      const scrollThreshold = 0;
+
+      const hasHomeHero = Boolean(heroEl && heroNameEl && brandNameEl);
+      bodyEl.classList.toggle("has-home-hero", hasHomeHero);
+      htmlEl.classList.toggle("has-home-hero", hasHomeHero);
+
+      const updateHeroNameMorphMetrics = () => {
+        if (!hasHomeHero) return;
+
+        const heroRect = heroNameEl.getBoundingClientRect();
+        const brandRect = brandNameEl.getBoundingClientRect();
+        const shiftX = brandRect.left - heroRect.left;
+        const shiftY = brandRect.top - heroRect.top;
+        const scale = brandRect.height / Math.max(heroRect.height, 1);
+
+        htmlEl.style.setProperty("--hero-name-shift-x", `${shiftX.toFixed(2)}px`);
+        htmlEl.style.setProperty("--hero-name-shift-y", `${shiftY.toFixed(2)}px`);
+        htmlEl.style.setProperty("--hero-name-scale", `${Math.max(0.15, Math.min(1, scale)).toFixed(4)}`);
+      };
+
+      const computeScrolledState = () => {
+        const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        if (y > scrollThreshold) return true;
+        if (!heroEl || !headerEl) return false;
+        const heroTop = heroEl.getBoundingClientRect().top;
+        return heroTop < -(headerEl.offsetHeight * 0.2);
+      };
 
       const updateScrolledState = () => {
-        const isScrolled = window.scrollY > scrollThreshold;
+        const isScrolled = computeScrolledState();
         bodyEl.classList.toggle("has-scrolled", isScrolled);
         htmlEl.classList.toggle("has-scrolled", isScrolled);
         headerEl?.classList.toggle("is-compact", isScrolled);
         heroEl?.classList.toggle("is-scrolled", isScrolled);
-
-        if (headerEl) headerEl.style.height = isScrolled ? "44px" : "";
-        if (brandNameEl) brandNameEl.style.fontSize = isScrolled ? "18px" : "";
-        heroImages().forEach((img) => {
-          img.style.transform = isScrolled ? "scale(1.1)" : "scale(1)";
-        });
-
-        scrollTicking = false;
       };
 
-      const onScroll = () => {
-        if (scrollTicking) return;
-        scrollTicking = true;
-        window.requestAnimationFrame(updateScrolledState);
-      };
-
+      updateHeroNameMorphMetrics();
       updateScrolledState();
-      window.addEventListener("scroll", onScroll, { passive: true });
+      document.addEventListener("scroll", updateScrolledState, { passive: true, capture: true });
+      window.addEventListener("resize", updateHeroNameMorphMetrics);
+      window.addEventListener("resize", updateScrolledState);
+      window.addEventListener("load", updateHeroNameMorphMetrics);
+      window.addEventListener("load", updateScrolledState);
+      if (document.fonts?.ready) {
+        document.fonts.ready
+          .then(() => {
+            updateHeroNameMorphMetrics();
+            updateScrolledState();
+          })
+          .catch(() => {});
+      }
     </script>
   </body>
 </html>
