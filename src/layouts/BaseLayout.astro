@@ -39,6 +39,7 @@ const isHomeRoute = Astro.url.pathname === "/";
         --header-border: #2d323a;
         --header-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 6px 14px rgba(0, 0, 0, 0.18);
         --surface-0: #111111;
+        --surface-0-rgb: 17,17,17;
         --surface-1: #171b21;
         --surface-2: #11141a;
         --surface-3: #111722;
@@ -58,6 +59,16 @@ const isHomeRoute = Astro.url.pathname === "/";
         --carousel-dot-hover-bg: rgba(255, 255, 255, 0.55);
         --carousel-dot-hover-border: rgba(255, 255, 255, 0.95);
         --carousel-dot-active: #ffffff;
+        --hero-overlay-radial-start: rgba(9, 14, 24, 0.12);
+        --hero-overlay-radial-end: rgba(9, 14, 24, 0.42);
+        --hero-overlay-linear-start: rgba(9, 14, 24, 0.12);
+        --hero-overlay-linear-end: rgba(9, 14, 24, 0.38);
+        --hero-title: #f3f6fb;
+        --hero-copy: rgba(243, 246, 251, 0.92);
+        --hero-title-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+        --hero-copy-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+        --footer-surface: rgba(163, 163, 163, 0.12);
+        --footer-divider: #383838;
       }
 
       @media (prefers-color-scheme: light) {
@@ -75,6 +86,7 @@ const isHomeRoute = Astro.url.pathname === "/";
           --header-border: #c8d3e0;
           --header-shadow: 0 1px 0 rgba(15, 21, 32, 0.05), 0 6px 14px rgba(16, 32, 54, 0.08);
           --surface-0: #f6f8fb;
+          --surface-0-rgb: 246,248,251;
           --surface-1: #ecf1f7;
           --surface-2: #ffffff;
           --surface-3: #e7eef7;
@@ -94,6 +106,16 @@ const isHomeRoute = Astro.url.pathname === "/";
           --carousel-dot-hover-bg: rgba(16, 42, 79, 0.38);
           --carousel-dot-hover-border: rgba(16, 42, 79, 0.7);
           --carousel-dot-active: #0f5fad;
+          --hero-overlay-radial-start: rgba(228, 235, 245, 0.04);
+          --hero-overlay-radial-end: rgba(12, 20, 33, 0.18);
+          --hero-overlay-linear-start: rgba(228, 235, 245, 0.02);
+          --hero-overlay-linear-end: rgba(12, 20, 33, 0.22);
+          --hero-title: #f8fbff;
+          --hero-copy: rgba(248, 251, 255, 0.94);
+          --hero-title-shadow: 0 2px 18px rgba(10, 15, 24, 0.22);
+          --hero-copy-shadow: 0 1px 10px rgba(10, 15, 24, 0.18);
+          --footer-surface: rgba(84, 84, 84, 0.12);
+          --footer-divider: #c8c8c8;
         }
       }
       
@@ -168,7 +190,6 @@ const isHomeRoute = Astro.url.pathname === "/";
   </head>
   <body class:list={[isHomeRoute && "home-route"]}>
     <div class="wrap">
-      <slot name="header" />
       <main>
         <slot />
       </main>
@@ -195,63 +216,6 @@ const isHomeRoute = Astro.url.pathname === "/";
         faviconQuery.addListener(applyThemeFavicon);
       }
 
-      const bodyEl = document.body;
-      const htmlEl = document.documentElement;
-      const headerEl = document.querySelector(".site-header");
-      const brandNameEl = document.querySelector(".site-header .brand-name");
-      const heroEl = document.querySelector(".hero-home");
-      const heroNameEl = document.querySelector(".hero-home .hero-name");
-      const scrollThreshold = 0;
-
-      const hasHomeHero = Boolean(heroEl && heroNameEl && brandNameEl);
-      bodyEl.classList.toggle("has-home-hero", hasHomeHero);
-      htmlEl.classList.toggle("has-home-hero", hasHomeHero);
-
-      const updateHeroNameMorphMetrics = () => {
-        if (!hasHomeHero) return;
-
-        const heroRect = heroNameEl.getBoundingClientRect();
-        const brandRect = brandNameEl.getBoundingClientRect();
-        const shiftX = brandRect.left - heroRect.left;
-        const shiftY = brandRect.top - heroRect.top;
-        const scale = brandRect.height / Math.max(heroRect.height, 1);
-
-        htmlEl.style.setProperty("--hero-name-shift-x", `${shiftX.toFixed(2)}px`);
-        htmlEl.style.setProperty("--hero-name-shift-y", `${shiftY.toFixed(2)}px`);
-        htmlEl.style.setProperty("--hero-name-scale", `${Math.max(0.15, Math.min(1, scale)).toFixed(4)}`);
-      };
-
-      const computeScrolledState = () => {
-        const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-        if (y > scrollThreshold) return true;
-        if (!heroEl || !headerEl) return false;
-        const heroTop = heroEl.getBoundingClientRect().top;
-        return heroTop < -(headerEl.offsetHeight * 0.2);
-      };
-
-      const updateScrolledState = () => {
-        const isScrolled = computeScrolledState();
-        bodyEl.classList.toggle("has-scrolled", isScrolled);
-        htmlEl.classList.toggle("has-scrolled", isScrolled);
-        headerEl?.classList.toggle("is-compact", isScrolled);
-        heroEl?.classList.toggle("is-scrolled", isScrolled);
-      };
-
-      updateHeroNameMorphMetrics();
-      updateScrolledState();
-      document.addEventListener("scroll", updateScrolledState, { passive: true, capture: true });
-      window.addEventListener("resize", updateHeroNameMorphMetrics);
-      window.addEventListener("resize", updateScrolledState);
-      window.addEventListener("load", updateHeroNameMorphMetrics);
-      window.addEventListener("load", updateScrolledState);
-      if (document.fonts?.ready) {
-        document.fonts.ready
-          .then(() => {
-            updateHeroNameMorphMetrics();
-            updateScrolledState();
-          })
-          .catch(() => {});
-      }
     </script>
   </body>
 </html>

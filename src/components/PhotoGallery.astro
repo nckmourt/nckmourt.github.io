@@ -1,15 +1,153 @@
 ---
 const { photos = [] } = Astro.props;
 ---
-<section class="photo-gallery" aria-label="Photography gallery">
-  {photos.map((photo) => (
-    <figure class="photo-tile">
-      <img src={photo.src} alt={photo.alt} loading="lazy" />
-    </figure>
-  ))}
-</section>
+<div class="photo-gallery-wrap" data-photo-gallery-wrap>
+  <section class="photo-gallery-shell is-collapsed" data-photo-gallery-shell>
+    <div class="photo-gallery-fade" aria-hidden="true"></div>
+    <section class="photo-gallery" aria-label="Photography gallery" data-photo-gallery>
+      {photos.map((photo) => (
+        <figure class="photo-tile">
+          <img src={photo.src} alt={photo.alt} loading="lazy" />
+        </figure>
+      ))}
+    </section>
+  </section>
+  <div class="graphics-grid-actions">
+    <button class="graphics-show-more" type="button" data-photo-show-more hidden>Show More</button>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector("[data-photo-gallery-wrap]");
+  if (root) {
+    const shell = root.querySelector("[data-photo-gallery-shell]");
+    const gallery = root.querySelector("[data-photo-gallery]");
+    const tiles = Array.from(root.querySelectorAll(".photo-tile"));
+    const images = Array.from(root.querySelectorAll(".photo-tile img"));
+    const button = root.querySelector("[data-photo-show-more]");
+    const defaultVisibleCount = 6;
+    let isExpanded = false;
+    let updateFrame = 0;
+
+    const scheduleUpdate = () => {
+      if (updateFrame) window.cancelAnimationFrame(updateFrame);
+      updateFrame = window.requestAnimationFrame(() => {
+        updateFrame = window.requestAnimationFrame(() => {
+          updateCollapsedState();
+        });
+      });
+    };
+
+    const updateCollapsedState = () => {
+      if (!shell || !gallery || !button) return;
+
+      if (tiles.length <= defaultVisibleCount) {
+        shell.style.maxHeight = "";
+        shell.classList.remove("is-collapsed", "is-expanded");
+        button.hidden = true;
+        return;
+      }
+
+      button.hidden = false;
+      button.textContent = isExpanded ? "Show Less" : "Show More";
+      shell.classList.toggle("is-collapsed", !isExpanded);
+      shell.classList.toggle("is-expanded", isExpanded);
+
+      if (isExpanded) {
+        shell.style.maxHeight = `${gallery.scrollHeight}px`;
+        return;
+      }
+
+      const peekTile = tiles[defaultVisibleCount];
+      if (!peekTile) {
+        shell.style.maxHeight = "";
+        return;
+      }
+
+      const galleryRect = gallery.getBoundingClientRect();
+      const peekRect = peekTile.getBoundingClientRect();
+      const collapsedHeight = Math.max(0, peekRect.top - galleryRect.top + peekRect.height * 0.5);
+      shell.style.maxHeight = `${collapsedHeight}px`;
+    };
+
+    button?.addEventListener("click", () => {
+      isExpanded = !isExpanded;
+      scheduleUpdate();
+      if (!isExpanded) {
+        root.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    });
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => scheduleUpdate()) : null;
+
+    resizeObserver?.observe(gallery);
+
+    images.forEach((image) => {
+      if (image.complete) {
+        if (typeof image.decode === "function") {
+          image.decode().catch(() => {}).finally(scheduleUpdate);
+        } else {
+          scheduleUpdate();
+        }
+        return;
+      }
+
+      image.addEventListener("load", scheduleUpdate, { once: true });
+      image.addEventListener("error", scheduleUpdate, { once: true });
+    });
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(scheduleUpdate).catch(() => {});
+    }
+
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("load", scheduleUpdate);
+    scheduleUpdate();
+  }
+</script>
 
 <style>
+  .photo-gallery-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .photo-gallery-shell {
+    position: relative;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .photo-gallery-shell.is-collapsed .photo-gallery-fade {
+    opacity: 1;
+  }
+
+  .photo-gallery-shell.is-expanded .photo-gallery-fade {
+    opacity: 0;
+  }
+
+  .photo-gallery-fade {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 320px;
+    background: linear-gradient(
+      180deg,
+      rgba(var(--surface-0-rgb), 0) 0%,
+      rgba(var(--surface-0-rgb), 0.18) 18%,
+      rgba(var(--surface-0-rgb), 0.48) 38%,
+      rgba(var(--surface-0-rgb), 0.78) 58%,
+      rgba(var(--surface-0-rgb), 0.94) 76%,
+      rgba(var(--surface-0-rgb), 1) 100%
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 1;
+  }
+
   .photo-gallery {
     max-width: 1400px;
     margin: 0 auto;
@@ -41,6 +179,36 @@ const { photos = [] } = Astro.props;
     opacity: 0.95;
   }
 
+  .graphics-grid-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .graphics-show-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.5);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    color: var(--text-heading);
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .graphics-show-more:hover {
+    background: rgba(var(--theme-accent-rgb), 0.2);
+    border-color: rgba(var(--theme-accent-rgb), 0.85);
+  }
+
   @media (max-width: 1100px) {
     .photo-gallery {
       column-count: 2;
@@ -48,6 +216,10 @@ const { photos = [] } = Astro.props;
   }
 
   @media (max-width: 700px) {
+    .photo-gallery-fade {
+      height: 260px;
+    }
+
     .photo-gallery {
       column-count: 1;
       padding: 14px 16px 0;

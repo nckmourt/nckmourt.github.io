@@ -1,9 +1,9 @@
 ---
 const heroSlides = [
   // Tweak these to adjust focal points.
-  { src: "/images/hero/capitol.jpg", positionY: "22%", mobilePositionY: "52%", zoom: 1.0 },
-  { src: "/images/hero/foggy_bottom.jpg", positionY: "0%", mobilePositionY: "48%", zoom: 1 },
-  { src: "/images/hero/scotus.jpg", positionY: "44%", mobilePositionY: "44%", zoom: 1 },
+  { src: "/images/hero/capitol.jpg", positionY: "35%", mobilePositionY: "35%", zoom: 1 },
+  { src: "/images/hero/foggy_bottom.jpg", positionY: "25%", mobilePositionY: "30%", zoom: 1 },
+  { src: "/images/hero/scotus.jpg", positionY: "50%", mobilePositionY: "50%", zoom: 1 },
 ];
 ---
 <section class="hero-home" aria-label="Homepage introduction">
@@ -23,10 +23,15 @@ const heroSlides = [
     </div>
 
     <div class="hero-overlay">
-      <h1 class="hero-name">Nick Mourtoupalas</h1>
-      <p class="hero-bio">
-        I transform data into visual reporting and interactive tools that reveal how power and policy shape the world around us.
-      </p>
+      <div class="hero-copy">
+        <h1 class="hero-name">Nick Mourtoupalas</h1>
+        <p class="hero-bio">
+          <span class="hero-bio-desktop-break">I transform data into visual reporting and interactive tools that</span>
+          <br class="hero-bio-break" />
+          <span class="hero-bio-desktop-break">reveal how power and policy shape the world around us.</span>
+          <span class="hero-bio-mobile-flow">I transform data into visual reporting and interactive tools that reveal how power and policy shape the world around us.</span>
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -55,10 +60,11 @@ const heroSlides = [
   }
 
   .hero-carousel {
+    --hero-fluid: clamp(0, calc((100vw - 420px) / 480px), 1);
+    --hero-side-gap: clamp(0px, calc((100vw - 420px) * 0.1), 44px);
     position: relative;
     width: 100%;
-    height: min(68vw, 750px);
-    min-height: 460px;
+    height: clamp(360px, 68vw, 500px);
     overflow: hidden;
     background: var(--surface-2);
   }
@@ -73,8 +79,8 @@ const heroSlides = [
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 50% 36%, rgba(9, 14, 24, 0.12), rgba(9, 14, 24, 0.42) 72%),
-      linear-gradient(180deg, rgba(9, 14, 24, 0.12), rgba(9, 14, 24, 0.38));
+      radial-gradient(circle at 50% 36%, var(--hero-overlay-radial-start), var(--hero-overlay-radial-end) 72%),
+      linear-gradient(180deg, var(--hero-overlay-linear-start), var(--hero-overlay-linear-end));
     pointer-events: none;
   }
 
@@ -95,17 +101,22 @@ const heroSlides = [
     display: block;
     object-fit: cover;
     object-position: 50% var(--hero-slide-position-y, 50%);
-    filter: blur(28px) brightness(0.78) saturate(0.88);
-    transform: scale(1.14);
+    filter:
+      blur(calc(10px + (18px * var(--hero-fluid))))
+      brightness(calc(0.9 - (0.12 * var(--hero-fluid))))
+      saturate(calc(0.94 - (0.06 * var(--hero-fluid))));
+    transform: scale(calc(1 + (0.14 * var(--hero-fluid))));
+    opacity: clamp(0.28, var(--hero-fluid), 1);
+    transition: opacity 0.35s ease, filter 0.35s ease, transform 0.35s ease;
   }
 
   .hero-slide-main-wrap {
     position: absolute;
-    top: clamp(16px, 2.2vw, 30px);
+    top: 0;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: min(1356px, calc(100vw - 44px));
+    width: min(1356px, calc(100vw - var(--hero-side-gap)));
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -121,100 +132,119 @@ const heroSlides = [
     transform: scale(var(--hero-slide-zoom, 1.08));
     transform-origin: center center;
     filter: brightness(0.96) saturate(0.94) drop-shadow(0 20px 26px rgba(0, 0, 0, 0.28));
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.04) 8%, rgba(0, 0, 0, 0.12) 14%, rgba(0, 0, 0, 0.24) 20%, rgba(0, 0, 0, 0.42) 26%, rgba(0, 0, 0, 0.68) 32%, rgba(0, 0, 0, 0.9) 38%, #000 44%, #000 56%, rgba(0, 0, 0, 0.9) 62%, rgba(0, 0, 0, 0.68) 68%, rgba(0, 0, 0, 0.42) 74%, rgba(0, 0, 0, 0.24) 80%, rgba(0, 0, 0, 0.12) 86%, rgba(0, 0, 0, 0.04) 92%, transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.04) 8%, rgba(0, 0, 0, 0.12) 14%, rgba(0, 0, 0, 0.24) 20%, rgba(0, 0, 0, 0.42) 26%, rgba(0, 0, 0, 0.68) 32%, rgba(0, 0, 0, 0.9) 38%, #000 44%, #000 56%, rgba(0, 0, 0, 0.9) 62%, rgba(0, 0, 0, 0.68) 68%, rgba(0, 0, 0, 0.42) 74%, rgba(0, 0, 0, 0.24) 80%, rgba(0, 0, 0, 0.12) 86%, rgba(0, 0, 0, 0.04) 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, calc(1 - var(--hero-fluid))) 0%,
+      rgba(0, 0, 0, calc(1 - (0.96 * var(--hero-fluid)))) 8%,
+      rgba(0, 0, 0, calc(1 - (0.88 * var(--hero-fluid)))) 14%,
+      rgba(0, 0, 0, calc(1 - (0.76 * var(--hero-fluid)))) 20%,
+      rgba(0, 0, 0, calc(1 - (0.58 * var(--hero-fluid)))) 26%,
+      rgba(0, 0, 0, calc(1 - (0.32 * var(--hero-fluid)))) 32%,
+      rgba(0, 0, 0, calc(1 - (0.1 * var(--hero-fluid)))) 38%,
+      #000 44%,
+      #000 56%,
+      rgba(0, 0, 0, calc(1 - (0.1 * var(--hero-fluid)))) 62%,
+      rgba(0, 0, 0, calc(1 - (0.32 * var(--hero-fluid)))) 68%,
+      rgba(0, 0, 0, calc(1 - (0.58 * var(--hero-fluid)))) 74%,
+      rgba(0, 0, 0, calc(1 - (0.76 * var(--hero-fluid)))) 80%,
+      rgba(0, 0, 0, calc(1 - (0.88 * var(--hero-fluid)))) 86%,
+      rgba(0, 0, 0, calc(1 - (0.96 * var(--hero-fluid)))) 92%,
+      rgba(0, 0, 0, calc(1 - var(--hero-fluid))) 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, calc(1 - var(--hero-fluid))) 0%,
+      rgba(0, 0, 0, calc(1 - (0.96 * var(--hero-fluid)))) 8%,
+      rgba(0, 0, 0, calc(1 - (0.88 * var(--hero-fluid)))) 14%,
+      rgba(0, 0, 0, calc(1 - (0.76 * var(--hero-fluid)))) 20%,
+      rgba(0, 0, 0, calc(1 - (0.58 * var(--hero-fluid)))) 26%,
+      rgba(0, 0, 0, calc(1 - (0.32 * var(--hero-fluid)))) 32%,
+      rgba(0, 0, 0, calc(1 - (0.1 * var(--hero-fluid)))) 38%,
+      #000 44%,
+      #000 56%,
+      rgba(0, 0, 0, calc(1 - (0.1 * var(--hero-fluid)))) 62%,
+      rgba(0, 0, 0, calc(1 - (0.32 * var(--hero-fluid)))) 68%,
+      rgba(0, 0, 0, calc(1 - (0.58 * var(--hero-fluid)))) 74%,
+      rgba(0, 0, 0, calc(1 - (0.76 * var(--hero-fluid)))) 80%,
+      rgba(0, 0, 0, calc(1 - (0.88 * var(--hero-fluid)))) 86%,
+      rgba(0, 0, 0, calc(1 - (0.96 * var(--hero-fluid)))) 92%,
+      rgba(0, 0, 0, calc(1 - var(--hero-fluid))) 100%
+    );
+    transition: -webkit-mask-image 0.35s ease, mask-image 0.35s ease, filter 0.35s ease;
   }
 
   .hero-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
+    display: grid;
+    place-items: center;
     padding: 0 var(--page-gutter);
     text-align: center;
   }
 
+  .hero-copy {
+    width: min(750px, calc(100% - (var(--page-gutter) * 2)));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(12px, 2vw, 18px);
+    transform: translateY(20px);
+  }
+
   .hero-name {
-    position: absolute;
-    top: 50%;
-    left: 50%;
     margin: 0;
     width: fit-content;
-    max-width: calc(100% - (var(--page-gutter) * 2));
+    max-width: none;
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
-    font-size: clamp(3rem, 8vw, 6rem);
-    letter-spacing: 0.05em;
+    font-size: clamp(1.45rem, 7.8vw, 6.35rem);
+    letter-spacing: clamp(0.04em, 0.046em + 0.02vw, 0.055em);
     text-transform: uppercase;
-    color: #f3f6fb;
+    color: var(--hero-title);
     line-height: 0.95;
     text-align: center;
     white-space: nowrap;
-    transform: translate(-50%, -50%) translateY(20px);
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+    text-shadow: var(--hero-title-shadow);
   }
 
   .hero-bio {
-    position: absolute;
-    top: 50%;
-    left: 50%;
     margin: 0;
-    width: min(500px, calc(100% - (var(--page-gutter) * 2)));
+    width: min(500px, 100%);
     max-width: 500px;
     font-family: "Inter", sans-serif;
-    font-size: 16px;
-    line-height: 1.65;
-    color: rgba(243, 246, 251, 0.92);
+    font-size: clamp(15px, 1.2vw, 16px);
+    line-height: clamp(1.55, 1.58 + 0.2vw, 1.65);
+    color: var(--hero-copy);
     text-align: center;
-    transform: translate(-50%, -50%) translateY(112px);
-    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+    text-shadow: var(--hero-copy-shadow);
   }
 
-  @media (max-width: 900px) {
-    .hero-name {
-      font-size: clamp(1.55rem, 7vw, 2.6rem);
+  .hero-bio-mobile-flow {
+    display: none;
+  }
+
+  .hero-bio-break {
+    display: block;
+  }
+
+  .hero-bio-desktop-break {
+    display: inline;
+  }
+
+  @media (max-width: 720px) {
+    .hero-bio-break,
+    .hero-bio-desktop-break {
+      display: none;
     }
 
-    .hero-bio {
-      font-size: 15px;
-      line-height: 1.6;
-      transform: translate(-50%, -50%) translateY(78px);
+    .hero-bio-mobile-flow {
+      display: inline;
     }
   }
 
-  @media (max-width: 600px) {
-    .hero-carousel {
-      min-height: 360px;
-      height: min(88vw, 560px);
-    }
-
-    .hero-slide-main-wrap {
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-
-    .hero-slide-bg,
-    .hero-slide-main {
-      object-position: 50% var(--hero-slide-mobile-position-y, var(--hero-slide-position-y, 50%));
-    }
-
-    .hero-slide-main {
-      height: 100%;
-      object-fit: cover;
-      transform: none;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.06) 10%, rgba(0, 0, 0, 0.18) 18%, rgba(0, 0, 0, 0.42) 26%, rgba(0, 0, 0, 0.78) 34%, #000 42%, #000 58%, rgba(0, 0, 0, 0.78) 66%, rgba(0, 0, 0, 0.42) 74%, rgba(0, 0, 0, 0.18) 82%, rgba(0, 0, 0, 0.06) 90%, transparent 100%);
-      mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.06) 10%, rgba(0, 0, 0, 0.18) 18%, rgba(0, 0, 0, 0.42) 26%, rgba(0, 0, 0, 0.78) 34%, #000 42%, #000 58%, rgba(0, 0, 0, 0.78) 66%, rgba(0, 0, 0, 0.42) 74%, rgba(0, 0, 0, 0.18) 82%, rgba(0, 0, 0, 0.06) 90%, transparent 100%);
-    }
-
-    .hero-name {
-      font-size: clamp(1.15rem, 6.1vw, 2rem);
-      letter-spacing: 0.04em;
-    }
-
-    .hero-bio {
-      width: min(420px, calc(100% - (var(--page-gutter) * 2)));
-      transform: translate(-50%, -50%) translateY(72px);
-    }
-
+  .hero-slide-bg,
+  .hero-slide-main {
+    object-position: 50% var(--hero-slide-mobile-position-y, var(--hero-slide-position-y, 50%));
   }
 </style>
