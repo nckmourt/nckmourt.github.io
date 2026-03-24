@@ -1,23 +1,22 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Hero from "../components/Hero.astro";
 import SocialLinks from "../components/SocialLinks.astro";
-import GraphicsFilterGrid from "../components/GraphicsFilterGrid.astro";
+import HomepageFeaturedProjects from "../components/HomepageFeaturedProjects.astro";
+import HomepageMoreWorkGrid from "../components/HomepageMoreWorkGrid.astro";
 import PhotoGallery from "../components/PhotoGallery.astro";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
 const allProjects = [...projects].sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
-
-const graphicsFilters = [
-  { key: "votes", label: "Votes" },
-  { key: "trackers", label: "Trackers" },
-  { key: "maps", label: "Maps" },
-  { key: "explainers", label: "Explainers" },
-  { key: "breaking-news", label: "Breaking News" },
-];
+const heroCapableProjects = allProjects.filter((project) => project.data.heroImage);
+const featuredProjects = [
+  ...heroCapableProjects.filter((project) => project.data.featured),
+  ...heroCapableProjects.filter((project) => !project.data.featured),
+].filter((project, index, list) => list.findIndex((item) => item.slug === project.slug) === index).slice(0, 6);
+const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
+const moreWorkProjects = heroCapableProjects.filter((project) => !featuredSlugs.has(project.slug)).slice(0, 25);
 
 const photos = [
   { id: 1, src: "/photos/35070831673_975b40802c_b.jpg", alt: "Photo 1" },
@@ -34,20 +33,26 @@ const photos = [
 ];
 ---
 <BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio of graphics journalism, data visualization, and photography.">
-  <Fragment slot="header"><Header /></Fragment>
-
   <section id="home">
     <Hero />
   </section>
 
-  <section id="graphics" class="section section-divided">
+  <section id="graphics" class="section section-divided featured-section">
     <div class="container">
       <div class="section-heading">
-        <h2 class="section-title">Graphics</h2>
-        <div class="section-kicker">Filter by category</div>
+        <h2 class="section-title">Featured Work</h2>
       </div>
     </div>
-    <GraphicsFilterGrid projects={allProjects} filters={graphicsFilters} />
+    <HomepageFeaturedProjects projects={featuredProjects} />
+  </section>
+
+  <section id="more-work" class="section section-divided more-work-section">
+    <div class="container">
+      <div class="section-heading">
+        <h2 class="section-title">More Work</h2>
+      </div>
+    </div>
+    <HomepageMoreWorkGrid projects={moreWorkProjects} />
   </section>
 
   <section id="photos" class="section section-divided">
@@ -135,6 +140,25 @@ const photos = [
     pointer-events: none;
   }
 
+  #graphics.section-divided,
+  #more-work.section-divided {
+    padding-top: 28px;
+  }
+
+  #graphics .section-heading,
+  #more-work .section-heading {
+    padding-top: clamp(8px, 2vw, 20px);
+    padding-bottom: clamp(24px, 3vw, 36px);
+  }
+
+  .featured-section {
+    padding-bottom: 92px;
+  }
+
+  .more-work-section {
+    padding-bottom: 88px;
+  }
+
   .section-heading {
     margin: 0;
     padding-top: clamp(24px, 5vw, 52px);
@@ -151,6 +175,7 @@ const photos = [
     text-transform: uppercase;
     color: var(--text-heading);
     line-height: 0.95;
+    text-align: center;
   }
 
   .section-kicker {
@@ -162,6 +187,7 @@ const photos = [
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.12em;
+    text-align: center;
   }
 
   .about-section {

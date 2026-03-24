@@ -1,0 +1,160 @@
+---
+const { projects = [] } = Astro.props;
+---
+<div class="homepage-more-work">
+  {projects.map((project) => {
+    const href = project.data.externalUrl || `/projects/${project.slug}/`;
+    const target = project.data.externalUrl ? "_blank" : "_self";
+
+    return (
+      <a
+        class="homepage-more-work-card"
+        href={href}
+        target={target}
+        rel={project.data.externalUrl ? "noopener noreferrer" : ""}
+        aria-label={project.data.title}
+      >
+        <div class="homepage-more-work-media">
+          {project.data.heroImage ? (
+            <img
+              class="homepage-more-work-image"
+              src={project.data.heroImage}
+              alt={project.data.title}
+              loading="lazy"
+            />
+          ) : (
+            <div class="homepage-more-work-placeholder">{project.data.title}</div>
+          )}
+          <div class="homepage-more-work-overlay" aria-hidden="true"></div>
+          <h3 class="homepage-more-work-title">{project.data.title}</h3>
+        </div>
+      </a>
+    );
+  })}
+</div>
+
+<style>
+  .homepage-more-work {
+    width: min(100%, 1380px);
+    margin: 0 auto;
+    padding: 0 22px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .homepage-more-work-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .homepage-more-work-media {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    aspect-ratio: 1 / 1;
+  }
+
+  .homepage-more-work-image,
+  .homepage-more-work-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .homepage-more-work-image {
+    object-fit: cover;
+    transition: transform 0.45s ease, filter 0.35s ease;
+  }
+
+  .homepage-more-work-placeholder {
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: var(--placeholder-bg);
+    color: var(--placeholder-text);
+    font-family: "Literata", Georgia, "Times New Roman", serif;
+    text-align: center;
+  }
+
+  .homepage-more-work-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(6, 10, 18, 0.04) 0%,
+      rgba(6, 10, 18, 0.24) 46%,
+      rgba(6, 10, 18, 0.68) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.28s ease;
+  }
+
+  .homepage-more-work-title {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(0.92rem, 1.1vw, 1.02rem);
+    font-weight: 600;
+    line-height: 1.35;
+    color: #f7fbff;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.28s ease, transform 0.32s ease;
+    z-index: 1;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.32);
+  }
+
+  .homepage-more-work-card:hover,
+  .homepage-more-work-card:focus-visible {
+    text-decoration: none;
+  }
+
+  .homepage-more-work-card:hover .homepage-more-work-image,
+  .homepage-more-work-card:focus-visible .homepage-more-work-image {
+    transform: scale(1.06);
+    filter: brightness(0.84);
+  }
+
+  .homepage-more-work-card:hover .homepage-more-work-overlay,
+  .homepage-more-work-card:focus-visible .homepage-more-work-overlay {
+    opacity: 1;
+  }
+
+  .homepage-more-work-card:hover .homepage-more-work-title,
+  .homepage-more-work-card:focus-visible .homepage-more-work-title {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 1220px) {
+    .homepage-more-work {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 980px) {
+    .homepage-more-work {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .homepage-more-work {
+      padding: 0 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .homepage-more-work {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
