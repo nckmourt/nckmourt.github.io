@@ -1,46 +1,190 @@
 ---
 const { projects = [] } = Astro.props;
 ---
-<div class="homepage-more-work">
-  {projects.map((project) => {
-    const href = project.data.externalUrl || `/projects/${project.slug}/`;
-    const target = project.data.externalUrl ? "_blank" : "_self";
+<div class="homepage-more-work-wrap" data-more-work-wrap>
+  <section class="homepage-more-work-shell is-collapsed" data-more-work-shell>
+    <div class="homepage-more-work-fade" aria-hidden="true"></div>
+    <div class="homepage-more-work" data-more-work-grid>
+      {projects.map((project) => {
+        const href = project.data.externalUrl || `/projects/${project.slug}/`;
+        const target = project.data.externalUrl ? "_blank" : "_self";
 
-    return (
-      <a
-        class="homepage-more-work-card"
-        href={href}
-        target={target}
-        rel={project.data.externalUrl ? "noopener noreferrer" : ""}
-        aria-label={project.data.title}
-      >
-        <div class="homepage-more-work-media">
-          {project.data.heroImage ? (
-            <img
-              class="homepage-more-work-image"
-              src={project.data.heroImage}
-              alt={project.data.title}
-              loading="lazy"
-            />
-          ) : (
-            <div class="homepage-more-work-placeholder">{project.data.title}</div>
-          )}
-          <div class="homepage-more-work-overlay" aria-hidden="true"></div>
-          <h3 class="homepage-more-work-title">{project.data.title}</h3>
-        </div>
-      </a>
-    );
-  })}
+        return (
+          <a
+            class="homepage-more-work-card"
+            href={href}
+            target={target}
+            rel={project.data.externalUrl ? "noopener noreferrer" : ""}
+            aria-label={project.data.title}
+          >
+            <div class="homepage-more-work-media">
+              {project.data.heroImage ? (
+                <img
+                  class="homepage-more-work-image"
+                  src={project.data.heroImage}
+                  alt={project.data.title}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="homepage-more-work-placeholder">{project.data.title}</div>
+              )}
+              <div class="homepage-more-work-overlay" aria-hidden="true"></div>
+              <h3 class="homepage-more-work-title">{project.data.title}</h3>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+  <div class="graphics-grid-actions">
+    <button class="graphics-show-more site-action-button" type="button" data-more-work-show-more hidden>Show More</button>
+  </div>
 </div>
 
+<script>
+  const root = document.querySelector("[data-more-work-wrap]");
+  if (root) {
+    const shell = root.querySelector("[data-more-work-shell]");
+    const grid = root.querySelector("[data-more-work-grid]");
+    const cards = Array.from(root.querySelectorAll(".homepage-more-work-card"));
+    const images = Array.from(root.querySelectorAll(".homepage-more-work-image"));
+    const button = root.querySelector("[data-more-work-show-more]");
+    const collapsedRows = 3;
+    const peekFraction = 1.08;
+    let isExpanded = false;
+    let updateFrame = 0;
+
+    const scheduleUpdate = () => {
+      if (updateFrame) window.cancelAnimationFrame(updateFrame);
+      updateFrame = window.requestAnimationFrame(() => {
+        updateFrame = window.requestAnimationFrame(() => {
+          updateCollapsedState();
+        });
+      });
+    };
+
+    const updateCollapsedState = () => {
+      if (!shell || !grid || !button) return;
+
+      const computedStyles = window.getComputedStyle(grid);
+      const templateColumns = computedStyles.gridTemplateColumns
+        .split(" ")
+        .filter((value) => value.trim().length > 0);
+      const columnCount = Math.max(1, templateColumns.length);
+      const defaultVisibleCount = columnCount * collapsedRows;
+
+      if (cards.length <= defaultVisibleCount) {
+        shell.style.maxHeight = "";
+        shell.classList.remove("is-collapsed", "is-expanded");
+        button.hidden = true;
+        return;
+      }
+
+      button.hidden = false;
+      button.textContent = isExpanded ? "Show Less" : "Show More";
+      shell.classList.toggle("is-collapsed", !isExpanded);
+      shell.classList.toggle("is-expanded", isExpanded);
+
+      if (isExpanded) {
+        shell.style.maxHeight = `${grid.scrollHeight}px`;
+        return;
+      }
+
+      const peekCard = cards[defaultVisibleCount];
+      if (!peekCard) {
+        shell.style.maxHeight = "";
+        return;
+      }
+
+      const gridRect = grid.getBoundingClientRect();
+      const peekRect = peekCard.getBoundingClientRect();
+      const collapsedHeight = Math.max(0, peekRect.top - gridRect.top + peekRect.height * peekFraction);
+      shell.style.maxHeight = `${collapsedHeight}px`;
+    };
+
+    button?.addEventListener("click", () => {
+      isExpanded = !isExpanded;
+      scheduleUpdate();
+      if (!isExpanded) {
+        root.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    });
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => scheduleUpdate()) : null;
+
+    resizeObserver?.observe(grid);
+
+    images.forEach((image) => {
+      if (image.complete) {
+        if (typeof image.decode === "function") {
+          image.decode().catch(() => {}).finally(scheduleUpdate);
+        } else {
+          scheduleUpdate();
+        }
+        return;
+      }
+
+      image.addEventListener("load", scheduleUpdate, { once: true });
+      image.addEventListener("error", scheduleUpdate, { once: true });
+    });
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(scheduleUpdate).catch(() => {});
+    }
+
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("load", scheduleUpdate);
+    scheduleUpdate();
+  }
+</script>
+
 <style>
-  .homepage-more-work {
-    width: min(100%, 1380px);
+  .homepage-more-work-wrap {
+    max-width: 1180px;
     margin: 0 auto;
+  }
+
+  .homepage-more-work-shell {
+    position: relative;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .homepage-more-work-shell.is-collapsed .homepage-more-work-fade {
+    opacity: 1;
+  }
+
+  .homepage-more-work-shell.is-expanded .homepage-more-work-fade {
+    opacity: 0;
+  }
+
+  .homepage-more-work-fade {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 220px;
+    background: linear-gradient(
+      180deg,
+      rgba(var(--surface-0-rgb), 0) 0%,
+      rgba(var(--surface-0-rgb), 0.12) 26%,
+      rgba(var(--surface-0-rgb), 0.38) 48%,
+      rgba(var(--surface-0-rgb), 0.72) 68%,
+      rgba(var(--surface-0-rgb), 0.92) 84%,
+      rgba(var(--surface-0-rgb), 1) 100%
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 2;
+  }
+
+  .homepage-more-work {
     padding: 0 22px;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 14px;
+    gap: 10px;
   }
 
   .homepage-more-work-card {
@@ -49,12 +193,18 @@ const { projects = [] } = Astro.props;
     text-decoration: none;
   }
 
+  .graphics-grid-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
   .homepage-more-work-media {
     position: relative;
     overflow: hidden;
     border: 1px solid var(--border-strong);
     background: var(--surface-2);
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 16 / 10;
   }
 
   .homepage-more-work-image,
@@ -145,10 +295,14 @@ const { projects = [] } = Astro.props;
   }
 
   @media (max-width: 700px) {
+    .homepage-more-work-fade {
+      height: 180px;
+    }
+
     .homepage-more-work {
       padding: 0 16px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 10px;
     }
   }
 

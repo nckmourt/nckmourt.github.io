@@ -38,7 +38,7 @@ const photos = [
   </section>
 
   <section id="graphics" class="section section-divided featured-section">
-    <div class="container">
+    <div class="section-heading-shell">
       <div class="section-heading">
         <h2 class="section-title">Featured Work</h2>
       </div>
@@ -47,7 +47,7 @@ const photos = [
   </section>
 
   <section id="more-work" class="section section-divided more-work-section">
-    <div class="container">
+    <div class="section-heading-shell">
       <div class="section-heading">
         <h2 class="section-title">More Work</h2>
       </div>
@@ -56,17 +56,21 @@ const photos = [
   </section>
 
   <section id="photos" class="section section-divided">
-    <div class="container">
+    <div class="section-heading-shell">
       <div class="section-heading">
-        <h2 class="section-title">Photos</h2>
+        <h2 class="section-title">Photography</h2>
       </div>
     </div>
     <PhotoGallery photos={photos} />
   </section>
 
-  <section id="about-contact" class="about-section">
+  <section id="about-contact" class="section section-divided about-section">
+    <div class="section-heading-shell">
+      <div class="section-heading">
+        <h2 class="section-title about-title">About & Contact</h2>
+      </div>
+    </div>
     <div class="container about-wrap">
-      <h2 class="about-title">About & Contact</h2>
       <div class="about-grid">
         <div class="about-copy">
           <div class="about-photo-inline-frame">
@@ -98,7 +102,7 @@ const photos = [
           </div>
           <div class="about-actions">
             <SocialLinks className="about-social" iconSet="themeAware" />
-            <a class="btn resume-link" href="/resume.pdf" target="_blank" rel="noopener noreferrer">View Resume</a>
+            <a class="resume-link site-action-button" href="/resume.pdf" target="_blank" rel="noopener noreferrer">View Resume</a>
           </div>
         </div>
       </div>
@@ -125,30 +129,7 @@ const photos = [
   }
 
   .section-divided {
-    position: relative;
-    padding-top: 54px;
-  }
-
-  .section-divided::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: var(--divider-width);
-    border-top: 1px solid var(--border-subtle);
-    pointer-events: none;
-  }
-
-  #graphics.section-divided,
-  #more-work.section-divided {
     padding-top: 28px;
-  }
-
-  #graphics .section-heading,
-  #more-work .section-heading {
-    padding-top: clamp(8px, 2vw, 20px);
-    padding-bottom: clamp(24px, 3vw, 36px);
   }
 
   .featured-section {
@@ -159,18 +140,32 @@ const photos = [
     padding-bottom: 88px;
   }
 
+  .section-heading-shell {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+
   .section-heading {
+    width: 100%;
     margin: 0;
-    padding-top: clamp(24px, 5vw, 52px);
-    padding-bottom: clamp(20px, 3vw, 28px);
+    padding-top: clamp(24px, 4.6vw, 44px);
+    padding-bottom: clamp(22px, 3vw, 30px);
+  }
+
+  .section-heading::after {
+    content: "";
+    display: block;
+    width: 100%;
+    margin: clamp(18px, 2.5vw, 24px) auto 0;
+    border-top: 1px solid var(--border-subtle);
   }
 
   .section-title {
-    margin: 0 auto 10px;
+    margin: 0 auto;
     width: min(100%, 860px);
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-size: clamp(2.7rem, 6vw, 4.5rem);
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-heading);
@@ -191,21 +186,7 @@ const photos = [
   }
 
   .about-section {
-    position: relative;
-    background: var(--surface-0);
-    padding: 54px 0 70px;
-    color: var(--text);
-  }
-
-  .about-section::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: var(--divider-width);
-    border-top: 1px solid var(--border-subtle);
-    pointer-events: none;
+    padding-bottom: 70px;
   }
 
   .about-wrap {
@@ -213,15 +194,7 @@ const photos = [
   }
 
   .about-title {
-    text-align: left;
-    font-family: "Bebas Neue", sans-serif;
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    width: min(860px, 100%);
-    margin: 0 auto 38px;
-    color: var(--text-heading);
+    margin-bottom: 0;
   }
 
   .about-grid {
@@ -263,19 +236,6 @@ const photos = [
     --social-hover-color: var(--text-heading);
   }
 
-  .resume-link {
-    border-color: rgba(var(--theme-accent-rgb), 0.5);
-    background: rgba(var(--theme-accent-rgb), 0.12);
-    padding: 7px 14px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .resume-link:hover {
-    background: rgba(var(--theme-accent-rgb), 0.2);
-    border-color: rgba(var(--theme-accent-rgb), 0.8);
-  }
-
   .about-side {
     width: 240px;
     display: flex;
@@ -289,11 +249,17 @@ const photos = [
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 18px;
-    width: 100%;
+    width: max-content;
+    max-width: 100%;
     flex-wrap: nowrap;
-    align-self: stretch;
+    align-self: flex-end;
+  }
+
+  .resume-link {
+    flex: 0 0 auto;
+    width: max-content;
   }
 
   .about-actions :global(.about-social) {

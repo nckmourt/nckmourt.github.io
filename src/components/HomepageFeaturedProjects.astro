@@ -62,7 +62,7 @@ function formatDisplayDate(dateText) {
 
   .homepage-featured-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(28px, 4vw, 56px);
     align-items: center;
     color: inherit;
@@ -70,7 +70,7 @@ function formatDisplayDate(dateText) {
   }
 
   .homepage-featured-row:nth-child(even) {
-    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .homepage-featured-row:nth-child(even) .homepage-featured-media {
@@ -109,7 +109,8 @@ function formatDisplayDate(dateText) {
   }
 
   .homepage-featured-copy {
-    max-width: 420px;
+    max-width: none;
+    width: 100%;
   }
 
   .homepage-featured-meta {

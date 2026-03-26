@@ -31,7 +31,7 @@ const isHomeRoute = Astro.url.pathname === "/";
         --max:940px;
         --page-gutter: clamp(18px, 4vw, 56px);
         --nav-height: 50px;
-        --divider-width: min(900px, calc(100% - (var(--page-gutter) * 1.2)));
+        --divider-width: min(1180px, calc(100% - 44px));
 
         /* Header specific variables */
         --header-bg: #171b21;
@@ -185,7 +185,50 @@ const isHomeRoute = Astro.url.pathname === "/";
         border-color: rgba(var(--theme-accent-rgb), 0.75);
         text-decoration:none;
       }
-      
+
+    </style>
+    <style is:global>
+      .site-action-button,
+      a.site-action-button,
+      button.site-action-button{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 18px;
+        white-space: nowrap;
+        border-radius: 999px;
+        border: 1px solid rgba(var(--theme-accent-rgb), 0.5);
+        background: rgba(var(--theme-accent-rgb), 0.12);
+        color: var(--text-heading);
+        text-decoration: none;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      }
+
+      a.site-action-button:link,
+      a.site-action-button:visited,
+      a.site-action-button:active,
+      button.site-action-button{
+        color: var(--text-heading);
+        text-decoration: none;
+      }
+
+      .site-action-button:hover,
+      a.site-action-button:hover,
+      button.site-action-button:hover{
+        background: rgba(var(--theme-accent-rgb), 0.2);
+        border-color: rgba(var(--theme-accent-rgb), 0.85);
+        color: var(--text-heading);
+        text-decoration: none;
+      }
     </style>
   </head>
   <body class:list={[isHomeRoute && "home-route"]}>
