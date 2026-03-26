@@ -245,16 +245,17 @@ const photos = [
   }
 
   .about-actions {
+    --about-action-gap: 8px;
     margin-top: 30px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
-    gap: 18px;
-    width: max-content;
-    max-width: 100%;
+    justify-content: flex-start;
+    gap: var(--about-action-gap);
+    width: 100%;
     flex-wrap: nowrap;
-    align-self: flex-end;
+    align-self: stretch;
+    overflow: hidden;
   }
 
   .resume-link {
@@ -264,6 +265,7 @@ const photos = [
 
   .about-actions :global(.about-social) {
     margin-left: 0;
+    gap: var(--about-action-gap);
   }
 
   .about-photo-frame {
