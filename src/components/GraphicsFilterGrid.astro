@@ -45,35 +45,41 @@ function formatTagLabel(tag) {
     ))}
   </nav>
 
-  <div class="graphics-grid" data-graphics-grid>
-    {graphicsProjects.map((project) => {
-      const href = project.data.externalUrl || `/projects/${project.slug}/`;
-      const target = project.data.externalUrl ? "_blank" : "_self";
-      return (
-        <a
-          class="graphics-card"
-          href={href}
-          target={target}
-          rel={project.data.externalUrl ? "noopener noreferrer" : ""}
-          data-tags={project.data.tags.join(",")}
-          aria-label={project.data.title}
-        >
-          <div class="graphics-card-media">
-            {project.data.heroImage ? (
-              <img src={project.data.heroImage} alt={project.data.title} loading="lazy" />
-            ) : (
-              <div class="graphics-card-placeholder">{project.data.title}</div>
-            )}
-          </div>
-          <h3 class="graphics-card-title">{project.data.title}</h3>
-          <div class="graphics-card-tags" aria-label="Project tags">
-            {project.data.tags.map((tag) => (
-              <span class="graphics-card-tag">{formatTagLabel(tag)}</span>
-            ))}
-          </div>
-        </a>
-      );
-    })}
+  <div class="graphics-grid-shell is-collapsed" data-graphics-grid-shell>
+    <div class="graphics-grid-fade" aria-hidden="true" data-graphics-grid-fade></div>
+    <div class="graphics-grid" data-graphics-grid>
+      {graphicsProjects.map((project) => {
+        const href = project.data.externalUrl || `/projects/${project.slug}/`;
+        const target = project.data.externalUrl ? "_blank" : "_self";
+        return (
+          <a
+            class="graphics-card"
+            href={href}
+            target={target}
+            rel={project.data.externalUrl ? "noopener noreferrer" : ""}
+            data-tags={project.data.tags.join(",")}
+            aria-label={project.data.title}
+          >
+            <div class="graphics-card-media">
+              {project.data.heroImage ? (
+                <img src={project.data.heroImage} alt={project.data.title} loading="lazy" />
+              ) : (
+                <div class="graphics-card-placeholder">{project.data.title}</div>
+              )}
+            </div>
+            <h3 class="graphics-card-title">{project.data.title}</h3>
+            <div class="graphics-card-tags" aria-label="Project tags">
+              {project.data.tags.map((tag) => (
+                <span class="graphics-card-tag">{formatTagLabel(tag)}</span>
+              ))}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+  <div class="graphics-grid-actions">
+    <button class="graphics-show-more" type="button" data-graphics-show-more hidden>Show More</button>
   </div>
 </div>
 
@@ -82,7 +88,13 @@ function formatTagLabel(tag) {
   if (root) {
     const buttons = Array.from(root.querySelectorAll(".graphics-filter-button"));
     const cards = Array.from(root.querySelectorAll(".graphics-card"));
+    const grid = root.querySelector("[data-graphics-grid]");
+    const gridShell = root.querySelector("[data-graphics-grid-shell]");
+    const showMoreButton = root.querySelector("[data-graphics-show-more]");
     const validKeys = new Set(buttons.map((button) => button.dataset.filter).filter(Boolean));
+    const defaultVisibleCount = 6;
+    let activeKey = "all";
+    let isExpanded = false;
 
     const readFilterFromHash = () => {
       const hash = window.location.hash.replace("#", "");
@@ -91,8 +103,48 @@ function formatTagLabel(tag) {
       return validKeys.has(key) ? key : "all";
     };
 
+    const getVisibleCards = () => cards.filter((card) => !card.hidden);
+
+    const updateCollapsedState = () => {
+      if (!grid || !gridShell || !showMoreButton) return;
+
+      const visibleCards = getVisibleCards();
+      const canCollapse = visibleCards.length > defaultVisibleCount;
+
+      if (!canCollapse) {
+        gridShell.style.maxHeight = "";
+        gridShell.classList.remove("is-collapsed");
+        gridShell.classList.remove("is-expanded");
+        showMoreButton.hidden = true;
+        return;
+      }
+
+      showMoreButton.hidden = false;
+      showMoreButton.textContent = isExpanded ? "Show Less" : "Show More";
+      gridShell.classList.toggle("is-expanded", isExpanded);
+      gridShell.classList.toggle("is-collapsed", !isExpanded);
+
+      if (isExpanded) {
+        gridShell.style.maxHeight = `${grid.scrollHeight}px`;
+        return;
+      }
+
+      const peekCard = visibleCards[defaultVisibleCount];
+      if (!peekCard) {
+        gridShell.style.maxHeight = "";
+        return;
+      }
+
+      const shellRect = grid.getBoundingClientRect();
+      const peekRect = peekCard.getBoundingClientRect();
+      const collapsedHeight = Math.max(0, peekRect.top - shellRect.top + peekRect.height * 0.5);
+      gridShell.style.maxHeight = `${collapsedHeight}px`;
+    };
+
     const applyFilter = (key, shouldUpdateHash = false) => {
       const nextKey = validKeys.has(key) ? key : "all";
+      activeKey = nextKey;
+      isExpanded = false;
 
       buttons.forEach((button) => {
         const isActive = button.dataset.filter === nextKey;
@@ -104,6 +156,10 @@ function formatTagLabel(tag) {
         const tags = (card.dataset.tags || "").split(",").filter(Boolean);
         const matches = nextKey === "all" || tags.includes(nextKey);
         card.hidden = !matches;
+      });
+
+      requestAnimationFrame(() => {
+        updateCollapsedState();
       });
 
       if (!shouldUpdateHash) return;
@@ -119,6 +175,18 @@ function formatTagLabel(tag) {
       });
     });
 
+    showMoreButton?.addEventListener("click", () => {
+      isExpanded = !isExpanded;
+      updateCollapsedState();
+      if (!isExpanded) {
+        root.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      updateCollapsedState();
+    });
+
     applyFilter(readFilterFromHash());
     window.addEventListener("hashchange", () => {
       applyFilter(readFilterFromHash());
@@ -130,7 +198,7 @@ function formatTagLabel(tag) {
   .graphics-filter-grid {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 18px 22px 0;
+    padding: 8px 22px 0;
   }
 
   .graphics-filter-nav {
@@ -138,7 +206,7 @@ function formatTagLabel(tag) {
     flex-wrap: wrap;
     width: min(100%, 860px);
     gap: 10px;
-    margin: -86px auto 28px;
+    margin: -72px auto 44px;
     justify-content: flex-end;
   }
 
@@ -175,6 +243,71 @@ function formatTagLabel(tag) {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
+  }
+
+  .graphics-grid-shell {
+    position: relative;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .graphics-grid-shell.is-collapsed .graphics-grid-fade {
+    opacity: 1;
+  }
+
+  .graphics-grid-shell.is-expanded .graphics-grid-fade {
+    opacity: 0;
+  }
+
+  .graphics-grid-fade {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 320px;
+    background: linear-gradient(
+      180deg,
+      rgba(var(--surface-0-rgb), 0) 0%,
+      rgba(var(--surface-0-rgb), 0.18) 18%,
+      rgba(var(--surface-0-rgb), 0.48) 38%,
+      rgba(var(--surface-0-rgb), 0.78) 58%,
+      rgba(var(--surface-0-rgb), 0.94) 76%,
+      rgba(var(--surface-0-rgb), 1) 100%
+    );
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 1;
+  }
+
+  .graphics-grid-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .graphics-show-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.5);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    color: var(--text-heading);
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .graphics-show-more:hover {
+    background: rgba(var(--theme-accent-rgb), 0.2);
+    border-color: rgba(var(--theme-accent-rgb), 0.85);
   }
 
   .graphics-card {
@@ -283,6 +416,10 @@ function formatTagLabel(tag) {
 
     .graphics-grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .graphics-grid-fade {
+      height: 260px;
     }
   }
 </style>

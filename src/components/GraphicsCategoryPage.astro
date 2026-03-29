@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Header from "./Header.astro";
 import Footer from "./Footer.astro";
 import ImageCarousel from "./ImageCarousel.astro";
 
@@ -33,8 +32,6 @@ const carouselSlides = projects
   }));
 ---
 <BaseLayout title={`${pageTitle} | Nick Mourtoupalas`} description={pageDescription}>
-  <Fragment slot="header"><Header /></Fragment>
-
   <section class="panel graphics-heading-panel">
     <div class="graphics-heading content-frame">
       <h1 class="graphics-title">{pageTitle}</h1>
