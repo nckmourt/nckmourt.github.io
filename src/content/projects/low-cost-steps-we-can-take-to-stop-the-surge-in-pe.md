@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: []
 featured: false
 externalUrl: "https://wapo.st/48OlcTt"
-heroImage: "/images/projects/low-cost-steps-we-can-take-to-stop-the-surge-in-pe.jpg"
+heroImage: "/images/projects/pedestriandeaths.gif"
 ---
