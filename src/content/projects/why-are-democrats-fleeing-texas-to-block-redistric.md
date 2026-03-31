@@ -1,10 +1,10 @@
 ---
-title: "Why are Democrats fleeing Texas to block redistricting plans, and what’s next?"
-description: "A plan to change Texas’s congressional map could help Republicans keep control of the U.S. House in the 2026 midterms. State Democrats hope to stall it."
+title: "Mapping where the redistricting fight stands and where it’s headed"
+description: "A state-by-state look at the congressional redistricting fight ahead of the midterms and where the battle could spread next."
 date: "2025-08-04"
 role: "Graphics Reporter"
 tags: ["maps", "explainers"]
 featured: false
-externalUrl: "https://wapo.st/3O1udk5"
-heroImage: "/images/projects/why-are-democrats-fleeing-texas-to-block-redistric.jpg"
+externalUrl: "https://www.washingtonpost.com/politics/2025/08/20/congressional-redistricting-states-midterms/"
+heroImage: "/images/projects/texas-map-would-add-five-safe-republican-seats-wha.jpg"
 ---

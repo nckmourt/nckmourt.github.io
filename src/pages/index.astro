@@ -11,12 +11,25 @@ import { getCollection } from "astro:content";
 const projects = await getCollection("projects");
 const allProjects = [...projects].sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
 const heroCapableProjects = allProjects.filter((project) => project.data.heroImage);
-const featuredProjects = [
-  ...heroCapableProjects.filter((project) => project.data.featured),
-  ...heroCapableProjects.filter((project) => !project.data.featured),
-].filter((project, index, list) => list.findIndex((item) => item.slug === project.slug) === index).slice(0, 6);
+const featuredProjectSlugs = [
+  "how-senators-voted-on-trump-s-cabinet-picks",
+  "the-major-supreme-court-decisions-in-2025",
+  "why-are-democrats-fleeing-texas-to-block-redistric",
+  "trump-s-first-100-days-in-10-charts",
+  "low-cost-steps-we-can-take-to-stop-the-surge-in-pe",
+];
+const featuredProjects = featuredProjectSlugs
+  .map((slug) => heroCapableProjects.find((project) => project.slug === slug))
+  .filter(Boolean);
 const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
-const moreWorkProjects = heroCapableProjects.filter((project) => !featuredSlugs.has(project.slug)).slice(0, 25);
+const voteCountProjects = heroCapableProjects.filter((project) => {
+  const tags = project.data.tags || [];
+  return tags.includes("votes") && !tags.includes("explainers") && !featuredSlugs.has(project.slug);
+});
+const voteCountSlugs = new Set(voteCountProjects.map((project) => project.slug));
+const moreWorkProjects = heroCapableProjects
+  .filter((project) => !featuredSlugs.has(project.slug) && !voteCountSlugs.has(project.slug))
+  .slice(0, 25);
 
 const photos = [
   { id: 1, src: "/photos/35070831673_975b40802c_b.jpg", alt: "Photo 1" },
@@ -44,6 +57,18 @@ const photos = [
       </div>
     </div>
     <HomepageFeaturedProjects projects={featuredProjects} />
+  </section>
+
+  <section id="vote-counts" class="section section-divided vote-counts-section">
+    <div class="section-heading-shell">
+      <div class="section-heading">
+        <h2 class="section-title">Vote Counts</h2>
+        <p class="section-description vote-counts-description">
+          These stories track how Congress votes on pivotal legislation, holding each chamber and individual lawmaker accountable with clear, direct vote breakdowns published in real time or shortly after the action happens.
+        </p>
+      </div>
+    </div>
+    <HomepageMoreWorkGrid projects={voteCountProjects} />
   </section>
 
   <section id="more-work" class="section section-divided more-work-section">
@@ -140,6 +165,10 @@ const photos = [
     padding-bottom: 88px;
   }
 
+  .vote-counts-section {
+    padding-bottom: 88px;
+  }
+
   .section-heading-shell {
     width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
@@ -171,6 +200,25 @@ const photos = [
     color: var(--text-heading);
     line-height: 0.95;
     text-align: center;
+  }
+
+  .section-description {
+    width: min(100%, 500px);
+    margin: 18px auto 0;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(1rem, 1.15vw, 1.14rem);
+    line-height: 1.55;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .vote-counts-description {
+    width: min(75%, 885px);
+    max-width: none;
+    font-size: 16px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .section-kicker {

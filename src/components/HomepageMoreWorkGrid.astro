@@ -42,8 +42,9 @@ const { projects = [] } = Astro.props;
 </div>
 
 <script>
-  const root = document.querySelector("[data-more-work-wrap]");
-  if (root) {
+  const roots = document.querySelectorAll("[data-more-work-wrap]");
+
+  roots.forEach((root) => {
     const shell = root.querySelector("[data-more-work-shell]");
     const grid = root.querySelector("[data-more-work-grid]");
     const cards = Array.from(root.querySelectorAll(".homepage-more-work-card"));
@@ -136,7 +137,7 @@ const { projects = [] } = Astro.props;
     window.addEventListener("resize", scheduleUpdate);
     window.addEventListener("load", scheduleUpdate);
     scheduleUpdate();
-  }
+  });
 </script>
 
 <style>
