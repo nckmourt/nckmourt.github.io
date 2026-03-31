@@ -26,6 +26,14 @@ const voteCountProjects = heroCapableProjects.filter((project) => {
   const tags = project.data.tags || [];
   return tags.includes("votes") && !tags.includes("explainers") && !featuredSlugs.has(project.slug);
 });
+const houseVoteProjects = voteCountProjects.filter((project) => {
+  const title = (project.data.title || "").toLowerCase();
+  return title.includes("house");
+});
+const senateVoteProjects = voteCountProjects.filter((project) => {
+  const title = (project.data.title || "").toLowerCase();
+  return title.includes("senate") || title.includes("senator") || !title.includes("house");
+});
 const voteCountSlugs = new Set(voteCountProjects.map((project) => project.slug));
 const moreWorkProjects = heroCapableProjects
   .filter((project) => !featuredSlugs.has(project.slug) && !voteCountSlugs.has(project.slug))
@@ -68,7 +76,29 @@ const photos = [
         </p>
       </div>
     </div>
-    <HomepageMoreWorkGrid projects={voteCountProjects} />
+    <div class="vote-counts-columns">
+      <div class="vote-counts-column">
+        <div class="vote-counts-subheading-shell">
+          <div class="vote-counts-subheading">
+            <h3 class="vote-counts-subtitle">House</h3>
+          </div>
+        </div>
+        <HomepageMoreWorkGrid projects={houseVoteProjects} compact={true} groupedToggle="vote-counts" />
+      </div>
+      <div class="vote-counts-column">
+        <div class="vote-counts-subheading-shell">
+          <div class="vote-counts-subheading">
+            <h3 class="vote-counts-subtitle">Senate</h3>
+          </div>
+        </div>
+        <HomepageMoreWorkGrid projects={senateVoteProjects} compact={true} groupedToggle="vote-counts" />
+      </div>
+    </div>
+    <div class="graphics-grid-actions vote-counts-actions">
+      <button class="graphics-show-more site-action-button" type="button" data-more-work-group-toggle="vote-counts" hidden>
+        Show More
+      </button>
+    </div>
   </section>
 
   <section id="more-work" class="section section-divided more-work-section">
@@ -137,6 +167,50 @@ const photos = [
   <Fragment slot="footer"><Footer /></Fragment>
 </BaseLayout>
 
+<script>
+  const groupedMoreWorkButtons = document.querySelectorAll("[data-more-work-group-toggle]");
+
+  groupedMoreWorkButtons.forEach((button) => {
+    const group = button.dataset.moreWorkGroupToggle;
+    const roots = Array.from(document.querySelectorAll(`[data-more-work-group="${group}"]`));
+
+    if (!roots.length) {
+      button.hidden = true;
+      return;
+    }
+
+    const syncButton = () => {
+      const needsToggle = roots.some((root) => root.dataset.moreWorkNeedsToggle === "true");
+      const isExpanded = roots.some((root) => root.dataset.moreWorkExpanded === "true");
+
+      button.hidden = !needsToggle;
+      button.textContent = isExpanded ? "Show Less" : "Show More";
+    };
+
+    roots.forEach((root) => {
+      root.addEventListener("more-work:state-change", syncButton);
+    });
+
+    button.addEventListener("click", () => {
+      const shouldExpand = !roots.some((root) => root.dataset.moreWorkExpanded === "true");
+      roots.forEach((root) => {
+        root.dispatchEvent(
+          new CustomEvent("more-work:set-expanded", {
+            detail: { expanded: shouldExpand },
+          }),
+        );
+      });
+
+      if (!shouldExpand) {
+        const firstRoot = roots[0];
+        firstRoot?.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    });
+
+    syncButton();
+  });
+</script>
+
 <style>
   :global(html) {
     scroll-behavior: smooth;
@@ -167,6 +241,50 @@ const photos = [
 
   .vote-counts-section {
     padding-bottom: 88px;
+  }
+
+  .vote-counts-actions {
+    width: min(1180px, calc(100% - 44px));
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .vote-counts-columns {
+    width: min(1180px, calc(100% - 44px));
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    align-items: start;
+  }
+
+  .vote-counts-column {
+    min-width: 0;
+  }
+
+  .vote-counts-subheading-shell {
+    width: 100%;
+    margin: 0 0 20px;
+  }
+
+  .vote-counts-subheading {
+    width: 100%;
+    padding-bottom: 18px;
+  }
+
+  .vote-counts-subtitle {
+    margin: 0;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 3.2vw, 2.8rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-heading);
+    line-height: 0.95;
+    text-align: center;
   }
 
   .section-heading-shell {
@@ -219,6 +337,13 @@ const photos = [
     text-align: center;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  @media (max-width: 640px) {
+    .vote-counts-columns {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
   }
 
   .section-kicker {

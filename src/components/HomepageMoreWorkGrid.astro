@@ -1,7 +1,11 @@
 ---
-const { projects = [] } = Astro.props;
+const { projects = [], compact = false, groupedToggle = "" } = Astro.props;
 ---
-<div class="homepage-more-work-wrap" data-more-work-wrap>
+<div
+  class:list={["homepage-more-work-wrap", compact && "is-compact"]}
+  data-more-work-wrap
+  data-more-work-group={groupedToggle || undefined}
+>
   <section class="homepage-more-work-shell is-collapsed" data-more-work-shell>
     <div class="homepage-more-work-fade" aria-hidden="true"></div>
     <div class="homepage-more-work" data-more-work-grid>
@@ -36,9 +40,11 @@ const { projects = [] } = Astro.props;
       })}
     </div>
   </section>
-  <div class="graphics-grid-actions">
-    <button class="graphics-show-more site-action-button" type="button" data-more-work-show-more hidden>Show More</button>
-  </div>
+  {!groupedToggle && (
+    <div class="graphics-grid-actions">
+      <button class="graphics-show-more site-action-button" type="button" data-more-work-show-more hidden>Show More</button>
+    </div>
+  )}
 </div>
 
 <script>
@@ -65,7 +71,7 @@ const { projects = [] } = Astro.props;
     };
 
     const updateCollapsedState = () => {
-      if (!shell || !grid || !button) return;
+      if (!shell || !grid) return;
 
       const computedStyles = window.getComputedStyle(grid);
       const templateColumns = computedStyles.gridTemplateColumns
@@ -73,18 +79,35 @@ const { projects = [] } = Astro.props;
         .filter((value) => value.trim().length > 0);
       const columnCount = Math.max(1, templateColumns.length);
       const defaultVisibleCount = columnCount * collapsedRows;
+      const needsToggle = cards.length > defaultVisibleCount;
 
-      if (cards.length <= defaultVisibleCount) {
+      root.dataset.moreWorkNeedsToggle = String(needsToggle);
+      root.dataset.moreWorkExpanded = String(isExpanded);
+
+      if (!needsToggle) {
         shell.style.maxHeight = "";
         shell.classList.remove("is-collapsed", "is-expanded");
-        button.hidden = true;
+        if (button) button.hidden = true;
+        root.dispatchEvent(
+          new CustomEvent("more-work:state-change", {
+            detail: { expanded: false, needsToggle: false },
+          }),
+        );
         return;
       }
 
-      button.hidden = false;
-      button.textContent = isExpanded ? "Show Less" : "Show More";
+      if (button) {
+        button.hidden = false;
+        button.textContent = isExpanded ? "Show Less" : "Show More";
+      }
       shell.classList.toggle("is-collapsed", !isExpanded);
       shell.classList.toggle("is-expanded", isExpanded);
+      root.dataset.moreWorkExpanded = String(isExpanded);
+      root.dispatchEvent(
+        new CustomEvent("more-work:state-change", {
+          detail: { expanded: isExpanded, needsToggle: true },
+        }),
+      );
 
       if (isExpanded) {
         shell.style.maxHeight = `${grid.scrollHeight}px`;
@@ -103,12 +126,25 @@ const { projects = [] } = Astro.props;
       shell.style.maxHeight = `${collapsedHeight}px`;
     };
 
+    const setExpanded = (nextExpanded) => {
+      isExpanded = nextExpanded;
+      scheduleUpdate();
+    };
+
     button?.addEventListener("click", () => {
       isExpanded = !isExpanded;
       scheduleUpdate();
       if (!isExpanded) {
         root.scrollIntoView({ block: "start", behavior: "smooth" });
       }
+    });
+
+    root.addEventListener("more-work:set-expanded", (event) => {
+      setExpanded(Boolean(event.detail?.expanded));
+    });
+
+    root.addEventListener("more-work:toggle", () => {
+      setExpanded(!isExpanded);
     });
 
     const resizeObserver =
@@ -144,6 +180,10 @@ const { projects = [] } = Astro.props;
   .homepage-more-work-wrap {
     max-width: 1180px;
     margin: 0 auto;
+  }
+
+  .homepage-more-work-wrap.is-compact {
+    max-width: none;
   }
 
   .homepage-more-work-shell {
@@ -186,6 +226,11 @@ const { projects = [] } = Astro.props;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
+  }
+
+  .homepage-more-work-wrap.is-compact .homepage-more-work {
+    padding: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .homepage-more-work-card {
@@ -305,10 +350,19 @@ const { projects = [] } = Astro.props;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
+
+    .homepage-more-work-wrap.is-compact .homepage-more-work {
+      padding: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 480px) {
     .homepage-more-work {
+      grid-template-columns: 1fr;
+    }
+
+    .homepage-more-work-wrap.is-compact .homepage-more-work {
       grid-template-columns: 1fr;
     }
   }
