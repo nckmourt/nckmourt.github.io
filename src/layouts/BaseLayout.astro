@@ -18,6 +18,14 @@ const isHomeRoute = Astro.url.pathname === "/";
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,600;7..72,700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
     <style is:global>
+      @font-face {
+        font-family: "Miller Headline";
+        src: url("/fonts/miller-headline.otf") format("opentype");
+        font-style: italic;
+        font-weight: 400 900;
+        font-display: swap;
+      }
+
       :root{
         --bg:#111111;
         --text:#f3f6fb;
