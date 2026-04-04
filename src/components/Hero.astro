@@ -25,12 +25,6 @@ const heroSlides = [
     <div class="hero-overlay">
       <div class="hero-copy">
         <h1 class="hero-name">Nick Mourtoupalas</h1>
-        <p class="hero-bio">
-          <span class="hero-bio-desktop-break">I transform data into visual reporting and interactive tools that</span>
-          <br class="hero-bio-break" />
-          <span class="hero-bio-desktop-break">reveal how power and policy shape the world around us.</span>
-          <span class="hero-bio-mobile-flow">I transform data into visual reporting and interactive tools that reveal how power and policy shape the world around us.</span>
-        </p>
       </div>
     </div>
   </div>
@@ -188,7 +182,7 @@ const heroSlides = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(12px, 2vw, 18px);
+    justify-content: center;
     transform: translateY(20px);
   }
 
@@ -206,41 +200,6 @@ const heroSlides = [
     text-align: center;
     white-space: nowrap;
     text-shadow: var(--hero-title-shadow);
-  }
-
-  .hero-bio {
-    margin: 0;
-    width: min(500px, 100%);
-    max-width: 500px;
-    font-family: "Inter", sans-serif;
-    font-size: clamp(15px, 1.2vw, 16px);
-    line-height: clamp(1.55, 1.58 + 0.2vw, 1.65);
-    color: var(--hero-copy);
-    text-align: center;
-    text-shadow: var(--hero-copy-shadow);
-  }
-
-  .hero-bio-mobile-flow {
-    display: none;
-  }
-
-  .hero-bio-break {
-    display: block;
-  }
-
-  .hero-bio-desktop-break {
-    display: inline;
-  }
-
-  @media (max-width: 720px) {
-    .hero-bio-break,
-    .hero-bio-desktop-break {
-      display: none;
-    }
-
-    .hero-bio-mobile-flow {
-      display: inline;
-    }
   }
 
   .hero-slide-bg,
