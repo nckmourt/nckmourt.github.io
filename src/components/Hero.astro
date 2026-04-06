@@ -25,6 +25,11 @@ const heroSlides = [
     <div class="hero-overlay">
       <div class="hero-copy">
         <h1 class="hero-name">Nick Mourtoupalas</h1>
+        <p class="hero-lanes" aria-label="Reporting, Data Visualization, Photo">
+          <span class="hero-lanes-text">REPORTING</span>
+          <span class="hero-lanes-text">DATA VISUALIZATION</span>
+          <span class="hero-lanes-text">PHOTO</span>
+        </p>
       </div>
     </div>
   </div>
@@ -178,17 +183,17 @@ const heroSlides = [
   }
 
   .hero-copy {
-    width: min(750px, calc(100% - (var(--page-gutter) * 2)));
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: max-content;
+    max-width: calc(100% - (var(--page-gutter) * 2));
+    display: inline-grid;
+    justify-items: center;
+    gap: clamp(4px, 0.7vw, 8px);
     transform: translateY(20px);
   }
 
   .hero-name {
     margin: 0;
-    width: fit-content;
+    width: 100%;
     max-width: none;
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
@@ -200,6 +205,42 @@ const heroSlides = [
     text-align: center;
     white-space: nowrap;
     text-shadow: var(--hero-title-shadow);
+  }
+
+  .hero-lanes {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(0.98rem, 1.16vw, 1.24rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--hero-copy);
+    text-shadow: var(--hero-copy-shadow);
+    white-space: nowrap;
+  }
+
+  .hero-lanes-text {
+    display: inline-block;
+    letter-spacing: 0.42em;
+  }
+
+  @media (max-width: 720px) {
+    .hero-copy {
+      width: min(100%, 420px);
+      justify-items: stretch;
+    }
+
+    .hero-lanes {
+      font-size: 0.88rem;
+    }
+
+    .hero-lanes-text {
+      letter-spacing: 0.28em;
+    }
+
   }
 
   .hero-slide-bg,
