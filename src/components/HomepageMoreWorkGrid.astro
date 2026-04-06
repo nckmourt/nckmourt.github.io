@@ -1,5 +1,20 @@
 ---
 const { projects = [], compact = false, groupedToggle = "", showToggle = true } = Astro.props;
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+function formatDisplayDate(dateText) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateText ?? "");
+  if (!match) return dateText;
+
+  const [, yearText, monthText, dayText] = match;
+  const parsed = new Date(Number(yearText), Number(monthText) - 1, Number(dayText));
+  return Number.isNaN(parsed.getTime()) ? dateText : dateFormatter.format(parsed);
+}
 ---
 <div
   class:list={["homepage-more-work-wrap", compact && "is-compact"]}
@@ -38,7 +53,7 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
                 <div class="homepage-more-work-title-wrap">
                   <h3 class="homepage-more-work-title">{project.data.title}</h3>
                 </div>
-                <p class="homepage-more-work-date">{new Date(project.data.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+                <p class="homepage-more-work-date">{formatDisplayDate(project.data.date)}</p>
               </div>
             </article>
           </a>
@@ -248,7 +263,7 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
   }
 
   .homepage-more-work-wrap.is-compact .homepage-more-work {
-    padding: 0;
+    padding: 0 22px 10px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -412,7 +427,7 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
     }
 
     .homepage-more-work-wrap.is-compact .homepage-more-work {
-      padding: 0;
+      padding: 0 16px 10px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
     }

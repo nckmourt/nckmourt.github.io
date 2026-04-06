@@ -10,20 +10,26 @@ import { getCollection } from "astro:content";
 const projects = await getCollection("projects");
 const allProjects = [...projects].sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
 const heroCapableProjects = allProjects.filter((project) => project.data.heroImage);
-const featuredProjectSlugs = [
-  "how-senators-voted-on-trump-s-cabinet-picks",
-  "the-major-supreme-court-decisions-in-2025",
-  "why-are-democrats-fleeing-texas-to-block-redistric",
-  "trump-s-first-100-days-in-10-charts",
+const homepageTopProjectSlugs = [
   "low-cost-steps-we-can-take-to-stop-the-surge-in-pe",
+  "why-are-democrats-fleeing-texas-to-block-redistric",
+  "where-each-d-c-council-member-stands-on-the-comman",
+  "trump-s-first-100-days-in-10-charts",
+  "meet-the-top-donors-to-trump-s-239-million-inaugur",
+  "how-senators-voted-on-trump-s-cabinet-picks",
+  "jimmy-carter-s-journey-home-mapping-the-funeral-pl",
+  "how-people-cast-their-vote-in-each-state-and-how-i",
+  "trump-s-cabinet-was-in-flux-biden-s-has-barely-cha",
 ];
-const featuredProjects = featuredProjectSlugs
+const homepageWorkProjects = homepageTopProjectSlugs
   .map((slug) => heroCapableProjects.find((project) => project.slug === slug))
-  .filter(Boolean);
-const featuredSlugs = new Set(featuredProjects.map((project) => project.slug));
+  .filter(Boolean)
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+
+const homepageTopSlugs = new Set(homepageWorkProjects.map((project) => project.slug));
 const voteCountProjects = heroCapableProjects.filter((project) => {
   const tags = project.data.tags || [];
-  return tags.includes("votes") && !tags.includes("explainers") && !featuredSlugs.has(project.slug);
+  return tags.includes("votes") && !tags.includes("explainers") && !homepageTopSlugs.has(project.slug);
 });
 const houseVoteCountProjects = voteCountProjects
   .filter((project) => /house/i.test(project.data.title))
@@ -32,12 +38,6 @@ const senateVoteCountProjects = voteCountProjects
   .filter((project) => !/house/i.test(project.data.title) && /senat(or|e)/i.test(project.data.title))
   .slice(0, 6);
 const voteCountSlugs = new Set(voteCountProjects.map((project) => project.slug));
-const moreWorkProjects = heroCapableProjects
-  .filter((project) => !featuredSlugs.has(project.slug) && !voteCountSlugs.has(project.slug))
-  .slice(0, 25);
-const homepageWorkProjects = [...featuredProjects, ...moreWorkProjects]
-  .filter((project, index, array) => array.findIndex((candidate) => candidate.slug === project.slug) === index)
-  .slice(0, 9);
 
 const photos = [
   { id: 1, src: "/photos/35070831673_975b40802c_b.jpg", alt: "Photo 1" },
@@ -186,7 +186,7 @@ const photos = [
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: clamp(64px, 8vw, 108px);
+    column-gap: clamp(12px, 1.8vw, 24px);
     row-gap: 36px;
     align-items: start;
   }
@@ -229,6 +229,10 @@ const photos = [
     width: 100%;
     margin: clamp(18px, 2.5vw, 24px) auto 0;
     border-top: 1px solid var(--border-subtle);
+  }
+
+  #photos .section-heading::after {
+    display: none;
   }
 
   .section-title {
@@ -394,7 +398,7 @@ const photos = [
     }
 
     .vote-counts-columns {
-      column-gap: 40px;
+      column-gap: 14px;
     }
   }
 
