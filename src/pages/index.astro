@@ -127,6 +127,10 @@ const photos = [
           <p>
             In addition to his reporting, Nick shoots film photography, documenting cities, landscapes and everyday life with the same attention to structure and composition that informs his journalism. Outside of work, he enjoys seeing live music, exploring Washington, running, traveling and spending time with the people closest to him.
           </p>
+          <div class="about-actions about-actions-mobile">
+            <SocialLinks className="about-social" iconSet="themeAware" />
+            <a class="resume-link site-action-button" href="/resume.pdf" target="_blank" rel="noopener noreferrer">View Resume</a>
+          </div>
         </div>
         <div class="about-side">
           <div class="about-photo-frame">
@@ -365,6 +369,10 @@ const photos = [
     overflow: hidden;
   }
 
+  .about-actions-mobile {
+    display: none;
+  }
+
   .resume-link {
     flex: 0 0 auto;
     width: max-content;
@@ -415,6 +423,16 @@ const photos = [
 
     .about-side {
       display: none !important;
+    }
+
+    .about-actions-mobile {
+      display: flex;
+      margin-top: 28px;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      overflow: visible;
     }
 
     .about-photo-inline-frame {

@@ -229,15 +229,23 @@ const heroSlides = [
   @media (max-width: 720px) {
     .hero-copy {
       width: min(100%, 420px);
-      justify-items: stretch;
+      justify-items: center;
+    }
+
+    .hero-name {
+      font-size: clamp(1.95rem, 10.2vw, 3.35rem);
     }
 
     .hero-lanes {
+      width: auto;
+      max-width: 100%;
       font-size: 0.88rem;
+      justify-self: center;
     }
 
     .hero-lanes-text {
-      letter-spacing: 0.28em;
+      text-align: center;
+      letter-spacing: 0.2em;
     }
 
   }
