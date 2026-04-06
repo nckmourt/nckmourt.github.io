@@ -273,7 +273,7 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
     flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(15, 21, 32, 0.08);
-    border-radius: 24px;
+    border-radius: 16px;
     background: var(--surface-1);
     box-shadow: 0 10px 26px rgba(15, 21, 32, 0.12), 0 2px 6px rgba(15, 21, 32, 0.08);
     transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
@@ -321,8 +321,8 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    min-height: 168px;
-    height: 168px;
+    min-height: 196px;
+    height: 196px;
     padding: 20px 18px 22px;
     background: var(--surface-1);
   }
@@ -330,14 +330,16 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
   .homepage-more-work-title-wrap {
     width: 100%;
     flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
 
   .homepage-more-work-wrap.is-compact .homepage-more-work-copy {
-    min-height: 168px;
-    height: 168px;
+    min-height: 224px;
+    height: 224px;
     justify-content: flex-start;
   }
 
@@ -351,9 +353,6 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
     color: var(--text-heading);
     text-align: center;
     text-wrap: balance;
-  }
-
-  .homepage-more-work-wrap.is-compact .homepage-more-work-title {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
@@ -371,6 +370,7 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
     color: #adadad;
     text-align: center;
     margin-top: auto;
+    flex: 0 0 auto;
   }
 
   .homepage-more-work-card:hover,
@@ -418,14 +418,14 @@ const { projects = [], compact = false, groupedToggle = "", showToggle = true } 
     }
 
     .homepage-more-work-wrap.is-compact .homepage-more-work-copy {
-      min-height: 156px;
-      height: 156px;
+      min-height: 208px;
+      height: 208px;
     }
 
     .homepage-more-work-copy {
       gap: 10px;
-      min-height: 156px;
-      height: 156px;
+      min-height: 180px;
+      height: 180px;
       padding: 18px 16px 20px;
     }
 
