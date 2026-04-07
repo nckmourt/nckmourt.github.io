@@ -61,7 +61,9 @@ const heroSlides = [
     --hero-side-gap: clamp(0px, calc((100vw - 420px) * 0.1), 44px);
     position: relative;
     width: 100%;
-    height: clamp(360px, 68vw, 500px);
+    min-height: 100vh;
+    min-height: 100svh;
+    height: 100dvh;
     overflow: hidden;
     background: var(--surface-2);
   }

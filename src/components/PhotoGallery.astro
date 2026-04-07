@@ -26,15 +26,86 @@ const { photos = [] } = Astro.props;
     const images = Array.from(root.querySelectorAll(".photo-tile img"));
     const button = root.querySelector("[data-photo-show-more]");
     const defaultVisibleCount = 6;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let isExpanded = false;
     let updateFrame = 0;
+    let revealObserver = null;
+    const revealedTiles = new Set();
 
     const scheduleUpdate = () => {
       if (updateFrame) window.cancelAnimationFrame(updateFrame);
       updateFrame = window.requestAnimationFrame(() => {
         updateFrame = window.requestAnimationFrame(() => {
           updateCollapsedState();
+          updateRevealState();
         });
+      });
+    };
+
+    const clearRevealObserver = () => {
+      if (revealObserver) {
+        revealObserver.disconnect();
+        revealObserver = null;
+      }
+    };
+
+    const revealTile = (tile, index) => {
+      if (!tile) return;
+      revealedTiles.add(index);
+      tile.classList.add("is-photo-visible");
+    };
+
+    const updateRevealState = () => {
+      clearRevealObserver();
+
+      if (!tiles.length) return;
+
+      tiles.forEach((tile, index) => {
+        tile.style.setProperty("--photo-reveal-delay", `${(index % 6) * 42}ms`);
+
+        if (revealedTiles.has(index)) {
+          tile.classList.add("is-photo-visible");
+          return;
+        }
+
+        tile.classList.remove("is-photo-visible");
+      });
+
+      if (prefersReducedMotion || typeof IntersectionObserver === "undefined") {
+        tiles.forEach((tile, index) => revealTile(tile, index));
+        return;
+      }
+
+      revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            const index = Number(entry.target.dataset.photoRevealIndex || "-1");
+            if (index < 0) return;
+
+            revealTile(entry.target, index);
+            revealObserver?.unobserve(entry.target);
+          });
+        },
+        {
+          root: null,
+          threshold: 0.16,
+          rootMargin: "0px 0px -8% 0px",
+        },
+      );
+
+      tiles.forEach((tile, index) => {
+        tile.dataset.photoRevealIndex = String(index);
+
+        if (revealedTiles.has(index)) return;
+
+        if (tile.getBoundingClientRect().top < window.innerHeight * 0.94) {
+          revealTile(tile, index);
+          return;
+        }
+
+        revealObserver.observe(tile);
       });
     };
 
@@ -66,7 +137,7 @@ const { photos = [] } = Astro.props;
 
       const galleryRect = gallery.getBoundingClientRect();
       const peekRect = peekTile.getBoundingClientRect();
-      const collapsedHeight = Math.max(0, peekRect.top - galleryRect.top + peekRect.height * 0.5);
+      const collapsedHeight = Math.max(0, peekRect.top - galleryRect.top + peekRect.height * 0.98);
       shell.style.maxHeight = `${collapsedHeight}px`;
     };
 
@@ -132,7 +203,7 @@ const { photos = [] } = Astro.props;
     right: 0;
     bottom: 0;
     left: 0;
-    height: 320px;
+    height: 220px;
     background: linear-gradient(
       180deg,
       rgba(var(--surface-0-rgb), 0) 0%,
@@ -162,6 +233,18 @@ const { photos = [] } = Astro.props;
     background: var(--surface-2);
     break-inside: avoid;
     line-height: 0;
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 520ms ease,
+      transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: var(--photo-reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .photo-tile.is-photo-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .photo-tile img {
@@ -193,7 +276,7 @@ const { photos = [] } = Astro.props;
 
   @media (max-width: 700px) {
     .photo-gallery-fade {
-      height: 260px;
+      height: 180px;
     }
 
     .photo-gallery {

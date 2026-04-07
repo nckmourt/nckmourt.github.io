@@ -80,15 +80,110 @@ function formatDisplayDate(dateText) {
     const collapsedRows = 3;
     const isVoteCountsGroup = root.dataset.moreWorkGroup === "vote-counts";
     const peekFraction = isVoteCountsGroup ? 0.3 : 0.52;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let isExpanded = false;
     let updateFrame = 0;
+    let revealObserver = null;
+    const revealedRows = new Set();
 
     const scheduleUpdate = () => {
       if (updateFrame) window.cancelAnimationFrame(updateFrame);
       updateFrame = window.requestAnimationFrame(() => {
         updateFrame = window.requestAnimationFrame(() => {
           updateCollapsedState();
+          updateRowRevealState();
         });
+      });
+    };
+
+    const setRowVisible = (rowIndex) => {
+      revealedRows.add(rowIndex);
+      cards.forEach((card) => {
+        if (Number(card.dataset.revealRow || "-1") === rowIndex) {
+          card.classList.add("is-row-visible");
+        }
+      });
+    };
+
+    const clearRowObserver = () => {
+      if (revealObserver) {
+        revealObserver.disconnect();
+        revealObserver = null;
+      }
+    };
+
+    const updateRowRevealState = () => {
+      cards.forEach((card) => {
+        card.classList.remove("is-row-visible", "is-scroll-reveal-ready");
+        delete card.dataset.revealRow;
+      });
+
+      clearRowObserver();
+
+      if (!cards.length) return;
+
+      const rows = [];
+
+      cards.forEach((card) => {
+        const cardTop = Math.round(card.offsetTop);
+        const lastRow = rows.at(-1);
+
+        if (!lastRow || Math.abs(lastRow.top - cardTop) > 6) {
+          rows.push({ top: cardTop, cards: [card] });
+          return;
+        }
+
+        lastRow.cards.push(card);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        row.cards.forEach((card) => {
+          card.dataset.revealRow = String(rowIndex);
+        });
+      });
+
+      if (prefersReducedMotion || typeof IntersectionObserver === "undefined") {
+        rows.forEach((_, rowIndex) => setRowVisible(rowIndex));
+        return;
+      }
+
+      revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            const rowIndex = Number(entry.target.dataset.revealRow || "-1");
+            if (rowIndex < 0) return;
+
+            setRowVisible(rowIndex);
+            revealObserver?.unobserve(entry.target);
+          });
+        },
+        {
+          root: null,
+          threshold: 0.18,
+          rootMargin: "0px 0px -10% 0px",
+        },
+      );
+
+      rows.forEach((row, rowIndex) => {
+        const leadCard = row.cards[0];
+        row.cards.forEach((card) => {
+          card.classList.add("is-scroll-reveal-ready");
+          card.style.setProperty("--row-reveal-delay", `${rowIndex * 90}ms`);
+        });
+
+        if (revealedRows.has(rowIndex)) {
+          setRowVisible(rowIndex);
+          return;
+        }
+
+        if (leadCard.getBoundingClientRect().top < window.innerHeight * 0.92) {
+          setRowVisible(rowIndex);
+          return;
+        }
+
+        revealObserver.observe(leadCard);
       });
     };
 
@@ -280,6 +375,21 @@ function formatDisplayDate(dateText) {
     display: block;
     color: inherit;
     text-decoration: none;
+  }
+
+  .homepage-more-work-card.is-scroll-reveal-ready {
+    opacity: 0;
+    transform: translateY(34px);
+    transition:
+      opacity 720ms ease,
+      transform 720ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: var(--row-reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .homepage-more-work-card.is-scroll-reveal-ready.is-row-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .homepage-more-work-card-inner {
