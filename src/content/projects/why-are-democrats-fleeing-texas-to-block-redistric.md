@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["maps", "explainers"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/2025/08/20/congressional-redistricting-states-midterms/"
-heroImage: "/images/projects/texas-map-would-add-five-safe-republican-seats-wha.jpg"
+heroImage: "/images/projects/why-are-democrats-fleeing-texas-to-block-redistric.jpg"
 ---
