@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: []
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/interactive/2024/trump-harris-jan-6-election-results/"
-heroImage: "/images/projects/harris-vs-trump-stances-on-the-2020-election-resul.php"
+heroImage: "/images/projects/harris-vs-trump-stances-on-the-2020-election-resul.jpg"
 ---

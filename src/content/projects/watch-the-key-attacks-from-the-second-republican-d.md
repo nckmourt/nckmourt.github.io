@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: []
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/2023/09/28/republican-debate-attacks-vivek-ramaswamy-nikki-haley/"
-heroImage: "/images/projects/watch-the-key-attacks-from-the-second-republican-d.php"
+heroImage: "/images/projects/watch-the-key-attacks-from-the-second-republican-d.jpg"
 ---

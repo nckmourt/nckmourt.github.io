@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["votes", "breaking-news"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/interactive/2023/house-vote-debt-ceiling/"
-heroImage: "/images/projects/how-the-house-voted-on-kevin-mccarthy-s-debt-ceili.php"
+heroImage: "/images/projects/how-the-house-voted-on-kevin-mccarthy-s-debt-ceili.jpg"
 ---

@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: []
 featured: false
 externalUrl: "https://www.washingtonpost.com/immigration/2026/01/21/immigration-visas-75-countries-paused/"
-heroImage: "/images/projects/immigration-visas-for-people-from-these-75-countri.php"
+heroImage: "/images/projects/immigration-visas-for-people-from-these-75-countri.jpg"
 ---

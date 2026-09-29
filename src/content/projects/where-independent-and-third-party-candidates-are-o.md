@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["maps"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/elections/2024/07/05/third-party-independent-candidate-win/"
-heroImage: "/images/projects/where-independent-and-third-party-candidates-are-o.php"
+heroImage: "/images/projects/where-independent-and-third-party-candidates-are-o.jpg"
 ---

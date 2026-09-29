@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["maps"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/dc-md-va/2022/04/09/maryland-congressional-map-midterm-elections/"
-heroImage: "/images/projects/explore-the-major-changes-to-maryland-s-congressio.php"
+heroImage: "/images/projects/explore-the-major-changes-to-maryland-s-congressio.gif"
 ---

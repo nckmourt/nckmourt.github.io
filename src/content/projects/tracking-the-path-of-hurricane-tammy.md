@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["trackers", "maps"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/weather/2023/10/19/tropical-storm-tammy-path-tracker/"
-heroImage: "/images/projects/tracking-the-path-of-hurricane-tammy.php"
+heroImage: "/images/projects/tracking-the-path-of-hurricane-tammy.jpg"
 ---

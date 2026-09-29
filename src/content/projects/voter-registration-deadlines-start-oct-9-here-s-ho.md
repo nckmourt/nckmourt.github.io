@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["votes", "explainers"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/video/politics/how-to-check-voter-registration-deadlines-in-your-state/2022/10/06/9924ba5e-c927-4cce-a5b0-e3e27953b038_video.html"
-heroImage: "/images/projects/voter-registration-deadlines-start-oct-9-here-s-ho.php"
+heroImage: "/images/projects/voter-registration-deadlines-start-oct-9-here-s-ho.jpg"
 ---

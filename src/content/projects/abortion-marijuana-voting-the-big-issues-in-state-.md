@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: []
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/2022/11/02/ballot-measures-2022-elections/"
-heroImage: "/images/projects/abortion-marijuana-voting-the-big-issues-in-state-.php"
+heroImage: "/images/projects/abortion-marijuana-voting-the-big-issues-in-state-.jpg"
 ---

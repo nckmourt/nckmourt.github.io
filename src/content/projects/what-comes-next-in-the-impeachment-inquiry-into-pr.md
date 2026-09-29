@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["explainers", "breaking-news"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/2023/12/13/impeachment-inquiry-biden/"
-heroImage: "/images/projects/what-comes-next-in-the-impeachment-inquiry-into-pr.php"
+heroImage: "/images/projects/what-comes-next-in-the-impeachment-inquiry-into-pr.jpg"
 ---

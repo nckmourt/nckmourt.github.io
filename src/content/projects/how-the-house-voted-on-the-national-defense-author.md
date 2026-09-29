@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["votes", "breaking-news"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/interactive/2024/12/11/ndaa-house-vote-funding-bill/"
-heroImage: "/images/projects/how-the-house-voted-on-the-national-defense-author.php"
+heroImage: "/images/projects/how-the-house-voted-on-the-national-defense-author.jpg"
 ---

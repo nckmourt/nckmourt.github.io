@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: []
 featured: false
 externalUrl: "https://www.washingtonpost.com/education/2025/03/13/education-department-layoffs-student-loans-fafsa-impacts/"
-heroImage: "/images/projects/how-education-department-layoffs-hit-student-loans.php"
+heroImage: "/images/projects/how-education-department-layoffs-hit-student-loans.jpg"
 ---

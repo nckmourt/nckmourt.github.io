@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["votes", "breaking-news"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/interactive/2023/iraq-war-authorization-senate-vote/"
-heroImage: "/images/projects/how-each-senator-voted-on-the-repeal-of-the-iraq-w.php"
+heroImage: "/images/projects/how-each-senator-voted-on-the-repeal-of-the-iraq-w.jpg"
 ---

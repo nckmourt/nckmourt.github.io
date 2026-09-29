@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["votes", "explainers"]
 featured: false
 externalUrl: "https://www.washingtonpost.com/politics/2022/09/20/voter-registration-deadline-2022/"
-heroImage: "/images/projects/check-the-voter-registration-deadline-in-your-stat.php"
+heroImage: "/images/projects/check-the-voter-registration-deadline-in-your-stat.jpg"
 ---
