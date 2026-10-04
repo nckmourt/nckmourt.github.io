@@ -188,10 +188,6 @@ const photos = [
     border-top: 1px solid var(--border-subtle);
   }
 
-  .vote-counts-section::after {
-    border-top: none;
-  }
-
   .vote-counts-columns {
     width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
@@ -242,7 +238,8 @@ const photos = [
     border-top: 1px solid var(--border-subtle);
   }
 
-  #photos .section-heading::after {
+  #photos .section-heading::after,
+  #about-contact .section-heading::after {
     display: none;
   }
 
