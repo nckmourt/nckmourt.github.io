@@ -6,5 +6,5 @@ role: "Graphics Reporter"
 tags: ["votes", "explainers"]
 featured: false
 externalUrl: "https://wapo.st/48AYWuB"
-heroImage: "/images/projects/how-people-cast-their-vote-in-each-state-and-how-i.jpg"
+heroImage: "/images/projects/voting-methods.gif"
 ---

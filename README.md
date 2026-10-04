@@ -44,3 +44,7 @@ npm run dev
 npm run build
 npm run preview
 ```
+
+## Restore photography
+
+Photography is temporarily hidden to focus the portfolio on professional work. Set `showPhotography` to `true` in `src/config/site.ts` to restore the homepage gallery, desktop and mobile navigation, and `/photos` redirect. The gallery component, photo list, and original files in `public/photos/` are preserved.

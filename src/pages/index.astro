@@ -5,6 +5,7 @@ import Hero from "../components/Hero.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import HomepageMoreWorkGrid from "../components/HomepageMoreWorkGrid.astro";
 import PhotoGallery from "../components/PhotoGallery.astro";
+import { showPhotography } from "../config/site";
 import { getCollection } from "astro:content";
 
 const projects = await getCollection("projects");
@@ -53,7 +54,7 @@ const photos = [
   { id: 11, src: "/photos/45987968891_9538f7560e_b.jpg", alt: "Photo 11" },
 ];
 ---
-<BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio of graphics journalism, data visualization, and photography.">
+<BaseLayout title="Nick Mourtoupalas | Graphics and data visualization" description="Professional portfolio of graphics journalism and data visualization.">
   <section id="home">
     <Hero />
   </section>
@@ -92,6 +93,7 @@ const photos = [
     </div>
   </section>
 
+  {showPhotography && (
   <section id="photos" class="section section-divided">
     <div class="section-heading-shell">
       <div class="section-heading">
@@ -100,6 +102,7 @@ const photos = [
     </div>
     <PhotoGallery photos={photos} />
   </section>
+  )}
 
   <section id="about-contact" class="section section-divided about-section">
     <div class="section-heading-shell">

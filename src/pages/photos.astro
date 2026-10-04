@@ -1,5 +1,6 @@
 ---
-const target = "/#photos";
+import { showPhotography } from "../config/site";
+const target = showPhotography ? "/#photos" : "/#graphics";
 ---
 <!doctype html>
 <html lang="en">
@@ -10,6 +11,6 @@ const target = "/#photos";
     <title>Redirecting...</title>
   </head>
   <body>
-    <p><a href={target}>Continue to Photos</a></p>
+    <p><a href={target}>Continue to Portfolio</a></p>
   </body>
 </html>
